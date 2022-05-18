@@ -41,7 +41,7 @@
         "name": "[concat(parameters('apiManagementServiceName'),'/policy')]",
         "properties": {
           "format": "rawxml-link",
-          "value": "https://raw.githubusercontent.com/resurfaceio/listener-azure-eh/master/policy.xml"
+          "value": "https://raw.githubusercontent.com/resurfaceio/azure-eh/master/policy.xml"
         },
         "dependsOn": ["[resourceId('Microsoft.ApiManagement/service/loggers', parameters('apiManagementServiceName'), parameters('loggerID'))]"]
       }
