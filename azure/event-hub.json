@@ -4,7 +4,7 @@
     "parameters": {
       "eventHubsNamespaceName": {
         "type": "string",
-        "defaultValue": "ResurfaceEHNamespace",
+        "defaultValue": "ResurfaceEH",
         "metadata": {
           "description": "Name of EventHubs namespace"
         }
@@ -28,7 +28,7 @@
       },
       "eventHubsInstanceName": {
         "type": "string",
-        "defaultValue": "ResurfaceEventHub",
+        "defaultValue": "apimlogs",
         "metadata": {
           "description": "Name of the EventHubs instance"
         }
@@ -58,11 +58,33 @@
               "messageRetentionInDays": 1,
               "partitionCount": 2
             },
-            "resources": []
+            "resources": [
+              {
+                "apiVersion": "2021-11-01",
+                "type": "authorizationRules",
+                "name": "listenpolicy",
+                "dependsOn": [
+                  "[resourceId('Microsoft.EventHub/namespaces/eventhubs/', parameters('eventHubsNamespaceName'), parameters('eventHubsInstanceName'))]"
+                ],
+                "properties": {
+                  "rights": [
+                    "Listen"
+                  ]
+                }
+              }
+            ]
           }
         ]
       }
     ],
     "outputs": {
+      "eventHubName": {
+        "type": "string",
+        "value": "[parameters('eventHubsInstanceName')]"
+      },
+      "azureEventHubConnectionString": {
+        "type": "string",
+        "value": "[listkeys(resourceId('Microsoft.EventHub/namespaces/eventhubs/authorizationRules', parameters('eventHubsNamespaceName'), parameters('eventHubsInstanceName'), 'listenpolicy'), '2017-04-01').primaryConnectionString]"
+      }
     }
   }
