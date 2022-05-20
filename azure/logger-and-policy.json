@@ -14,11 +14,11 @@
       },
       "eventHubsNamespaceName": {
         "type": "string",
-        "defaultValue": "ResurfaceEHNamespace"
+        "defaultValue": "ResurfaceEH"
       },
       "eventHubsInstanceName": {
         "type": "string",
-        "defaultValue": "ResurfaceEventHub"
+        "defaultValue": "apimlogs"
       }
     },
     "resources": [
