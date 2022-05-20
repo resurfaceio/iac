@@ -36,8 +36,35 @@
           }
         },
         "dependsOn": ["[resourceId('Microsoft.Resources/deployments', 'linkedEventHubsTemplate')]"]
+      },
+      {
+        "apiVersion": "2021-04-01",
+        "type": "Microsoft.Resources/deployments",
+        "name": "linkedStorageAccountTemplate",
+        "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+            "uri": "https://raw.githubusercontent.com/resurfaceio/azure-eh/master/azure/arm-templates/storageaccount.json"
+          }
+        }
       }
     ],
     "outputs": {
+      "azureEHConnectionString": {
+        "type": "string",
+        "value": "[reference('linkedEventHubsTemplate').outputs.azureEventHubConnectionString.value]"
+      },
+      "eventHubName": {
+        "type": "string",
+        "value": "[reference('linkedEventHubsTemplate').outputs.eventHubName.value]"
+      },
+      "azureStorageConnectionString": {
+        "type": "string",
+        "value": "[reference('linkedStorageAccountTemplate').outputs.storageConnectionString.value]"
+      },
+      "storageContainerName": {
+        "type": "string",
+        "value": "[reference('linkedStorageAccountTemplate').outputs.storageContainerName.value]"
+      }
     }
   }
