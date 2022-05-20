@@ -1,0 +1,70 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+      "storageAccountName": "[concat('checkpoints', uniqueString(resourceGroup().id))]",
+      "containerName": "[concat('container', uniqueString(resourceGroup().id))]"
+    },
+    "resources": [
+      {
+        "apiVersion": "2021-09-01",
+        "type": "Microsoft.Storage/storageAccounts",
+        "name": "[variables('storageAccountName')]",
+        "location": "[resourceGroup().location]",
+        "sku": { "name": "Standard_LRS" },
+        "kind": "StorageV2",
+        "properties": {
+          "accessTier": "Hot"
+        }
+      },
+      {
+        "apiVersion": "2021-06-01",
+        "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+        "name": "[format('{0}/default/{1}', variables('storageAccountName'), variables('containerName'))]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+        ]
+      },
+      {
+        "apiVersion": "2021-09-01",
+        "type": "Microsoft.Storage/storageAccounts/managementPolicies",
+        "name": "[concat(variables('storageAccountName'), '/default')]",
+        "properties": {
+          "policy": {
+            "rules": [
+              {
+                "enabled": true,
+                "name": "retentionPolicy",
+                "type": "Lifecycle",
+                "definition": {
+                  "filters": {
+                    "blobTypes": [
+                      "blockBlob"
+                    ]
+                  },
+                  "actions": {
+                    "baseBlob": {
+                      "delete": { "daysAfterModificationGreaterThan": 1 }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+        ]
+      }
+    ],
+    "outputs": {
+      "storageConnectionString": {
+        "type": "string",
+        "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',concat(listKeys(concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', variables('storageAccountName')), '2021-09-01').keys[0].value), ';EndpointSuffix=core.windows.net')]"
+      },
+      "storageContainerName": {
+        "type": "string",
+        "value": "[variables('containerName')]"
+      }
+    }
+  }
