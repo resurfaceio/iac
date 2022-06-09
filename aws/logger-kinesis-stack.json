@@ -49,7 +49,19 @@
     "Kinesis": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "Name": { "Fn::Join" : [ "-", [ { "Ref": "apiID" }, "resurfaceio", "kds" ] ] },
+        "Name": { 
+          "Fn::Join" : [ "-", [ "resurfaceio", "kds", { 
+            "Fn::Select" : [ 4, { 
+              "Fn::Split" : [ "-", { 
+                "Fn::Select" : [ 2, { 
+                  "Fn::Split" : [ "/", { 
+                    "Ref" : "AWS::StackId"
+                  } ]
+                } ]
+              } ]
+            } ]
+          } ] ]
+        },
         "ShardCount": 1
       }
     },
