@@ -83,6 +83,7 @@ For more variables, please take a look at the [reference](#variables)
     - `azurerm_kubernetes_cluster`: AKS cluster
     - `azurerm_kubernetes_cluster_node_pool`: AKS node pool
     - `local_file`: AKS cluster kubeconfig file
+
 - `eks`: EKS cluster and minimum required infrastructure
     - `aws_iam_role`: EKS Cluster Role, EKS Node Role
     - `aws_iam_role_policy_attachment`: Policies for each role
@@ -95,17 +96,20 @@ For more variables, please take a look at the [reference](#variables)
     - `aws_eks_node_group`: AWS EKS node group
     - `aws_eks_addon`: VPC CNI, Core DNS, EBS CSI
     - `local_file`: EKS cluster kubeconfig file
+
 - `gke`: GKE cluster and minimum required infrastructure
     - `google_compute_network`: GCP VPC
     - `google_compute_subnetwork`: GCP Subnet
     - `google_container_cluster`: GKE cluster
     - `google_container_node_pool`: GKE node pool
+
 - `ibm-oc`: IBM OpenShift cluster and minimum required infrastructure
     - `ibm_is_vpc`: IBM Cloud VPC
     - `ibm_is_public_gateway`:IBM Cloud Public Gateway
     - `ibm_is_subnet`: IBM Cloud Subnet
     - `ibm_resource_instance`: IBM Cloud COS instance
     - `ibm_container_vpc_cluster`: IBM OpenShift Cluster
+    
 - `helm`: helm releases
     - `helm_release`: Resurface, Cert-manager
 
