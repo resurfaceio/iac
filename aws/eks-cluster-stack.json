@@ -117,7 +117,7 @@
     "VPC": {
       "Type" : "AWS::EC2::VPC",
       "Properties" : {
-          "CidrBlock" : {"Ref": "VPCCIDR"},
+          "CidrBlock" : {"Ref": "VPCIpBlock"},
           "EnableDnsHostnames" : true,
 
           "Tags" : [ {
