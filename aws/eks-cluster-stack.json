@@ -32,18 +32,15 @@
     },
     "AvailabilityZone1": {
       "Type" : "AWS::EC2::AvailabilityZone::Name",
-      "Default" : { "Fn::Join": ["", [{ "Ref": "AWS::Region" }, "a"]]},
-      "Description" : "Select an availability zone for Subnet 1."
+      "Description" : "Select an availability zone for Subnet 1. Required."
     },
     "AvailabilityZone2": {
       "Type" : "AWS::EC2::AvailabilityZone::Name",
-      "Default" : { "Fn::Join": ["", [{ "Ref": "AWS::Region" }, "b"]]},
-      "Description" : "Select an availability zone for Subnet 2."
+      "Description" : "Select an availability zone for Subnet 2. Required."
     },
     "AvailabilityZone3": {
       "Type" : "AWS::EC2::AvailabilityZone::Name",
-      "Default" : { "Fn::Join": ["", [{ "Ref": "AWS::Region" }, "c"]]},
-      "Description" : "Select an availability zone for Subnet 3."
+      "Description" : "Select an availability zone for Subnet 3. Required."
     }
   },
   "Resources": {
