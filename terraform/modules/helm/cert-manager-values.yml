@@ -1,0 +1,14 @@
+tolerations: &base_tolerations
+  - key: kubernetes.io/arch
+    operator: Equal
+    value: arm64
+    effect: NoSchedule
+
+webhook:
+  tolerations: *base_tolerations
+
+cainjector:
+  tolerations: *base_tolerations
+
+startupapicheck:
+  tolerations: *base_tolerations
