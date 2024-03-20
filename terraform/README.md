@@ -116,10 +116,10 @@ For more variables, please take a look at the [reference](#variables)
 
 | Variable | Description | Type | Default value | Required | 
 |---|---|---|---|---|
-| `cloud_provider` | Cloud provider to deploy Kubernetes cluster" | `string` | `""` | No |
-| `cloud_providers` | List of cloud providers to deploy Kubernetes clusters" | `list(string)` | `[]` | No |
-| `cpu_arch` | CPU architecture for node pool VMs" | `string` | `"x86"` | No |
-| `node_count` | Number of Kubernetes nodes" | `number` | `1` | No |
+| `cloud_provider` | Cloud provider to deploy Kubernetes cluster | `string` | `""` | No |
+| `cloud_providers` | List of cloud providers to deploy Kubernetes clusters | `list(string)` | `[]` | No |
+| `cpu_arch` | CPU architecture for node pool VMs | `string` | `"x86"` | No |
+| `node_count` | Number of Kubernetes nodes | `number` | `1` | No |
 
 ### API Keys and Credentials
 
@@ -145,55 +145,55 @@ For more variables, please take a look at the [reference](#variables)
 
 | Variable | Description | Type | Default value | Required |
 |---|---|---|---|---|
-| `azure_region` | Azure region" | `string` | `"East US 2"` | No |
-| `azure_use_existing_rg` | Set to true to use existing Resource Group" | `bool` | `false` | No |
-| `aws_region` | AWS region" | `string` | `"us-east-1"` | No |
+| `azure_region` | Azure region | `string` | `"East US 2"` | No |
+| `azure_use_existing_rg` | Set to true to use existing Resource Group | `bool` | `false` | No |
+| `aws_region` | AWS region | `string` | `"us-east-1"` | No |
 | `aws_zones` | AWS availability zones | `list(string)` | `["us-east-1a", "us-east-1b", "us-east-1c"]` | No |
-| `gcp_region` | GCP region" | `string` | `"us-central1"` | No |
-| `gcp_zone` | GCP zone" | `string` | `"us-central1-a"` | No |
-| `ibmc_region` | IBM Cloud region" | `string` | `"us-south"` | No |
-| `ibmc_zone` | IBM Cloud zone" | `string` | `"us-south-1"` | No |
+| `gcp_region` | GCP region | `string` | `"us-central1"` | No |
+| `gcp_zone` | GCP zone | `string` | `"us-central1-a"` | No |
+| `ibmc_region` | IBM Cloud region | `string` | `"us-south"` | No |
+| `ibmc_zone` | IBM Cloud zone | `string` | `"us-south-1"` | No |
 
 ### Kubeconfig directories
 
 | Variable | Description | Type | Default value | Required |
 |---|---|---|---|---|
-| `aks_kubeconfig_dir` | Directory path on your local machine where the AKS cluster configuration file will be downloaded to." | `string` | `"."` | No |
-| `eks_kubeconfig_dir` | Directory path on your local machine where the EKS cluster configuration file will be downloaded to." | `string` | `"."` | No |
-| `gke_kubeconfig_dir` | Directory path on your local machine where the GKE cluster configuration file will be downloaded to." | `string` | `"."` | No |
-| `ibm_openshift_kubeconfig_dir` | Directory path on your local machine where the IBM OpenShift cluster configuration file will be downloaded to." | `string` | `"."` | No |
+| `aks_kubeconfig_dir` | Path for the local AKS cluster kubeconfig | `string` | `"."` | No |
+| `eks_kubeconfig_dir` | Path for the local EKS cluster kubeconfig | `string` | `"."` | No |
+| `gke_kubeconfig_dir` | Path for the local GKE cluster kubeconfig | `string` | `"."` | No |
+| `ibm_openshift_kubeconfig_dir` | Path for the local IBM OpenShift cluster kubeconfig | `string` | `"."` | No |
 
 ### Helm options
 
 | Variable | Description | Type | Default value | Required |
 |---|---|---|---|---|
-| `helm_use_local_chart` | Set to true if using a helm local chart" | `bool` | `false` | No |
-| `helm_local_chart_path` | Helm local chart directory path" | `string` | `"."` | No |
+| `helm_use_local_chart` | Set to true if using a helm local chart | `bool` | `false` | No |
+| `helm_local_chart_path` | Helm local chart directory path | `string` | `"."` | No |
 | `helm_timeout` | Time in seconds to wait for any individual kubernetes operation (like Jobs for hooks)" | `number` | `300` | No |
-| `skip_helm` | Set to true to skip all helm installs" | `bool` | `false` | No |
-| `helm_multinode_enabled` | Set to true to enable multinode mode" | `bool` | `false` | No |
-| `helm_multinode_worker_count` | Number of worker nodes" | `number` | `1` | No |
-| `helm_iceberg_enabled` | Set to true to enable iceberg mode" | `bool` | `false` | No |
-| `helm_tls_enabled` | Set to true to install cert-manager chart" | `bool` | `false` | No |
-| `helm_tls_autoissue_email` | Let's encrypt notifications will be sent to this address" | `string` | `"foo@bar.com"` | No |
-| `helm_auth_enabled` | Set to true to enable basic auth" | `bool` | `false` | No |
-| `helm_cert_manager_chart_version` | Cert-manager chart version" | `string` | `"v1.14.4"` | No |
-| `helm_resurface_chart_version` | Resurface chart version" | `string` | `""` | No |
-| `helm_resurface_app_version` | Resurface chart version" | `string` | `""` | No |
+| `skip_helm` | Set to true to skip all helm installs | `bool` | `false` | No |
+| `helm_multinode_enabled` | Set to true to enable multinode mode | `bool` | `false` | No |
+| `helm_multinode_worker_count` | Number of worker nodes | `number` | `1` | No |
+| `helm_iceberg_enabled` | Set to true to enable iceberg mode | `bool` | `false` | No |
+| `helm_tls_enabled` | Set to true to install cert-manager chart | `bool` | `false` | No |
+| `helm_tls_autoissue_email` | Let's encrypt notifications will be sent to this address | `string` | `"foo@bar.com"` | No |
+| `helm_auth_enabled` | Set to true to enable basic auth | `bool` | `false` | No |
+| `helm_cert_manager_chart_version` | Cert-manager chart version | `string` | `"v1.14.4"` | No |
+| `helm_resurface_chart_version` | Resurface chart version | `string` | `""` | No |
+| `helm_resurface_app_version` | Resurface chart version | `string` | `""` | No |
 
 ### Hosts for TLS
 
 | Variable | Description | Type | Default value | Required |
 |---|---|---|---|---|
-| `helm_tls_host_azure` | Host included in the TLS certificate for the Resurface AKS service" | `string` | `""` | No |
-| `helm_tls_host_aws` | Host included in the TLS certificate for the Resurface EKS service" | `string` | `""` | No |
-| `helm_tls_host_gcp` | Host included in the TLS certificate for the Resurface GKE service" | `string` | `""` | No |
+| `helm_tls_host_azure` | Host included in the TLS certificate for the Resurface AKS service | `string` | `""` | No |
+| `helm_tls_host_aws` | Host included in the TLS certificate for the Resurface EKS service | `string` | `""` | No |
+| `helm_tls_host_gcp` | Host included in the TLS certificate for the Resurface GKE service | `string` | `""` | No |
 
 ### Miscellaneous
 
 | Variable | Description | Type | Default value | Required |
 |---|---|---|---|---|
-| `prefix` | Prefix to use with all resources" | `string` | `"qa-"` | No |
+| `prefix` | Prefix to use with all resources | `string` | `"qa-"` | No |
 
 
 ## Outputs
