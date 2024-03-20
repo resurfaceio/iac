@@ -16,7 +16,6 @@ output "cluster_config_file" {
 output "cluster_kubeconfig" {
   description = "GKE cluster config Terraform object"
   value       = {
-    cluster_name    = google_container_cluster.cluster.name
     cluster_ca_cert = google_container_cluster.cluster.master_auth.0.cluster_ca_certificate
     host            = google_container_cluster.cluster.endpoint
     username        = ""

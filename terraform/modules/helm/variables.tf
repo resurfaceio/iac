@@ -28,13 +28,13 @@ variable "kube_config" {
     cluster_ca_cert = string
   })
   default = {
-    cluster_ca_cert = ""
     host            = ""
     username        = ""
     password        = ""
     token           = ""
     client_cert     = ""
     client_key      = ""
+    cluster_ca_cert = ""
   }
 }
 

@@ -31,7 +31,6 @@ output "cluster_config_file" {
 output "cluster_kubeconfig" {
   description = "GKE cluster config Terraform object"
   value       = {
-    cluster_name    = ibm_container_vpc_cluster.cluster.name
     # cluster_ca_cert = data.ibm_container_cluster_config.cluster_config.ca_certificate
     cluster_ca_cert = ""
     host            = data.ibm_container_cluster_config.cluster_config.host

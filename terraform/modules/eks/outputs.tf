@@ -16,7 +16,6 @@ output "cluster_config_file" {
 output "cluster_kubeconfig" {
   description = "EKS cluster config Terraform object"
   value = {
-    cluster_name    = aws_eks_cluster.cluster.name
     cluster_ca_cert = data.aws_eks_cluster.cluster.certificate_authority[0].data
     host            = data.aws_eks_cluster.cluster.endpoint
     username        = ""

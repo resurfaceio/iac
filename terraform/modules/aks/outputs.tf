@@ -11,7 +11,6 @@ output "cluster_config_file" {
 output "cluster_kubeconfig" {
   description = "AKS cluster config Terraform object"
   value       = {
-    cluster_name    = azurerm_kubernetes_cluster.cluster.name
     cluster_ca_cert = azurerm_kubernetes_cluster.cluster.kube_config[0].cluster_ca_certificate
     host            = azurerm_kubernetes_cluster.cluster.kube_config[0].host
     username        = azurerm_kubernetes_cluster.cluster.kube_config[0].username
