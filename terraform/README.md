@@ -112,7 +112,7 @@ For more variables, please take a look at the [reference](#variables)
 ## Variables
 
 | Variable | Description | Type | Default value | Required | 
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | `cloud_provider` | Cloud provider to deploy Kubernetes cluster" | `string` | `""` | No |
 | `cloud_providers` | List of cloud providers to deploy Kubernetes clusters" | `list(string)` | `[]` | No |
 | `cpu_arch` | CPU architecture for node pool VMs" | `string` | `"x86"` | `var.cpu_arch == "x86" || var.cpu_arch == "arm64"` | No |
@@ -121,7 +121,7 @@ For more variables, please take a look at the [reference](#variables)
 ### API Keys and Credentials
 
 | Variable | Description | Type | Default value | Required |
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | `azure_subscription_id` | Azure Subscription ID | `string` | | Yes |
 | `azure_sp_path` | Azure Service Principal JSON file path | `string` | | Yes |
 | `aws_profile` | AWS profile name as set in the shared configuration and credentials files | `string` | `"default"` | No |
@@ -133,7 +133,7 @@ For more variables, please take a look at the [reference](#variables)
 ### Resource Groups and Project IDs
 
 | Variable | Description | Type | Default value | Required |
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | `azure_resource_group` | Azure resource group | `string` | | Yes |
 | `gcp_project_id` | GCP Project ID | `string` | | Yes |
 | `ibmc_resource_group` | IBM Cloud resource group | `string` | | Yes |
@@ -141,7 +141,7 @@ For more variables, please take a look at the [reference](#variables)
 ### Regions and Zones
 
 | Variable | Description | Type | Default value | Required |
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | `azure_region` | Azure region" | `string` | `"East US 2"` | No |
 | `azure_use_existing_rg` | Set to true to use existing Resource Group" | `bool` | `false` | No |
 | `aws_region` | AWS region" | `string` | `"us-east-1"` | No |
@@ -154,7 +154,7 @@ For more variables, please take a look at the [reference](#variables)
 ### Kubeconfig directories
 
 | Variable | Description | Type | Default value | Required |
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | `aks_kubeconfig_dir` | Directory path on your local machine where the AKS cluster configuration file will be downloaded to." | `string` | `"."` | No |
 | `eks_kubeconfig_dir` | Directory path on your local machine where the EKS cluster configuration file will be downloaded to." | `string` | `"."` | No |
 | `gke_kubeconfig_dir` | Directory path on your local machine where the GKE cluster configuration file will be downloaded to." | `string` | `"."` | No |
@@ -163,7 +163,7 @@ For more variables, please take a look at the [reference](#variables)
 ### Helm options
 
 | Variable | Description | Type | Default value | Required |
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | `helm_use_local_chart` | Set to true if using a helm local chart" | `bool` | `false` | No |
 | `helm_local_chart_path` | Helm local chart directory path" | `string` | `"."` | No |
 | `helm_timeout` | Time in seconds to wait for any individual kubernetes operation (like Jobs for hooks)" | `number` | `300` | No |
@@ -181,7 +181,7 @@ For more variables, please take a look at the [reference](#variables)
 ### Hosts for TLS
 
 | Variable | Description | Type | Default value | Required |
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | `helm_tls_host_azure` | Host included in the TLS certificate for the Resurface AKS service" | `string` | `""` | No |
 | `helm_tls_host_aws` | Host included in the TLS certificate for the Resurface EKS service" | `string` | `""` | No |
 | `helm_tls_host_gcp` | Host included in the TLS certificate for the Resurface GKE service" | `string` | `""` | No |
@@ -189,7 +189,7 @@ For more variables, please take a look at the [reference](#variables)
 ### Miscellaneous
 
 | Variable | Description | Type | Default value | Required |
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | `prefix` | Prefix to use with all resources" | `string` | `"qa-"` | No |
 
 
