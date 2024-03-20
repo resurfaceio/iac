@@ -115,7 +115,7 @@ For more variables, please take a look at the [reference](#variables)
 |---|---|---|---|---|
 | `cloud_provider` | Cloud provider to deploy Kubernetes cluster" | `string` | `""` | No |
 | `cloud_providers` | List of cloud providers to deploy Kubernetes clusters" | `list(string)` | `[]` | No |
-| `cpu_arch` | CPU architecture for node pool VMs" | `string` | `"x86"` | `var.cpu_arch == "x86" || var.cpu_arch == "arm64"` | No |
+| `cpu_arch` | CPU architecture for node pool VMs" | `string` | `"x86"` | No |
 | `node_count` | Number of Kubernetes nodes" | `number` | `1` | No |
 
 ### API Keys and Credentials
@@ -145,7 +145,7 @@ For more variables, please take a look at the [reference](#variables)
 | `azure_region` | Azure region" | `string` | `"East US 2"` | No |
 | `azure_use_existing_rg` | Set to true to use existing Resource Group" | `bool` | `false` | No |
 | `aws_region` | AWS region" | `string` | `"us-east-1"` | No |
-| `aws_zones` | AWS availability zones | `list(string)` | `["us-east-1a", "us-east-1b", "us-east-1c"]` | `length(var.aws_zones) == 3` | No |
+| `aws_zones` | AWS availability zones | `list(string)` | `["us-east-1a", "us-east-1b", "us-east-1c"]` | No |
 | `gcp_region` | GCP region" | `string` | `"us-central1"` | No |
 | `gcp_zone` | GCP zone" | `string` | `"us-central1-a"` | No |
 | `ibmc_region` | IBM Cloud region" | `string` | `"us-south"` | No |
