@@ -26,14 +26,13 @@ Make sure to also set the corresponding credentials
 
 | Provider | Variable | Description |
 |---|---|---|
-| azure    | azure_subscription_id | 
-| azure | azure_subscription_id | Azure Subscription ID |
-| azure | azure_sp_path | Azure Service Principal JSON file path |
-| aws | aws_profile | AWS profile name as set in the shared configuration and credentials files |
-| aws | aws_config_path | AWS shared configuration file path |
-| aws | aws_creds_path | AWS shared credentials file path |
-| gcp | gcp_adc_path | GCP Application Default Credentials JSON file path |
-| ibm-openshift | ibmc_key_path | IBM Cloud API Key JSON file path |
+| `"azure"` | `azure_subscription_id` | Azure Subscription ID |
+| `"azure"` | `azure_sp_path` | Azure Service Principal JSON file path |
+| `"aws"` | `aws_profile` | AWS profile name as set in the shared configuration and credentials files |
+| `"aws"` | `aws_config_path` | AWS shared configuration file path |
+| `"aws"` | `aws_creds_path` | AWS shared credentials file path |
+| `"gcp"` | `gcp_adc_path` | GCP Application Default Credentials JSON file path |
+| `"ibm-openshift"` | `ibmc_key_path` | IBM Cloud API Key JSON file path |
 
 
 ### CPU Architecture
