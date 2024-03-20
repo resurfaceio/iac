@@ -192,7 +192,7 @@ variable "helm_local_chart_path" {
 }
 
 variable "helm_timeout" {
-  description = "Time in seconds to wait for any individual kubernetes operation (like Jobs for hooks)"
+  description = "Time in seconds to wait for any individual kubernetes operation (like jobs or hooks)"
   type        = number
   default     = 300
 }

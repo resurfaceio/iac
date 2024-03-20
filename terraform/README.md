@@ -169,7 +169,7 @@ For more variables, please take a look at the [reference](#variables)
 |---|---|---|---|---|
 | `helm_use_local_chart` | Set to true if using a helm local chart | `bool` | `false` | No |
 | `helm_local_chart_path` | Helm local chart directory path | `string` | `"."` | No |
-| `helm_timeout` | Time in seconds to wait for any individual kubernetes operation (like Jobs for hooks)" | `number` | `300` | No |
+| `helm_timeout` | Time in seconds to wait for any individual kubernetes operation (like jobs or hooks) | `number` | `300` | No |
 | `skip_helm` | Set to true to skip all helm installs | `bool` | `false` | No |
 | `helm_multinode_enabled` | Set to true to enable multinode mode | `bool` | `false` | No |
 | `helm_multinode_worker_count` | Number of worker nodes | `number` | `1` | No |

@@ -115,7 +115,7 @@ variable "resurface_app_version" {
 }
 
 variable "timeout" {
-  description = "Time in seconds to wait for any individual kubernetes operation (like Jobs for hooks)"
+  description = "Time in seconds to wait for any individual kubernetes operation (like jobs or hooks)"
   type        = number
   default     = 300
 }
