@@ -1,0 +1,434 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Deploys EKS cluster with VPC",
+  "Parameters": {
+    "ClusterName": {
+      "Type" : "String",
+      "Description" : "Enter a name for your EKS cluster. Required."
+    },
+    "NodeCount": {
+      "Type" : "Number",
+      "Default" : "3",
+      "Description" : "Enter the number of nodes for you EKS node group. Default is 3."
+    },
+    "KubernetesVersion": {
+      "Type" : "String",
+      "Default" : "1.29",
+      "AllowedValues" : ["1.27", "1.28", "1.29"],
+      "Description" : "Enter the Kubernetes version for your cluster. Default is 1.29.",
+      "ConstraintDescription": "Supported versions: \"1.27\", \"1.28\", \"1.29\". Please select a valid version."
+    },
+    "VPCIpBlock": {
+      "Type": "String",
+      "Default": "10.10.0.0/16",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "Description": "Enter a CIDR block for the new VPC. Default is 10.10.0.0/16",
+      "ConstraintDescription": "Must be a valid CIDR of the form x.x.x.x/x"
+    },
+    "SubnetIpBlocks": {
+      "Type": "CommaDelimitedList",
+      "Default": "10.10.0.0/20, 10.10.16.0/20, 10.10.32.0/20",
+      "Description": "Comma-delimited list of three CIDR blocks for Subnets. Must belong within VPC CIDR block. Defaults to [10.10.0.0/20, 10.10.16.0/20, 10.10.32.0/20]"
+    },
+    "AvailabilityZone1": {
+      "Type" : "AWS::EC2::AvailabilityZone::Name",
+      "Default" : { "Fn::Join": ["", [{ "Ref": "AWS::Region" }, "a"]]},
+      "Description" : "Select an availability zone for Subnet 1."
+    },
+    "AvailabilityZone2": {
+      "Type" : "AWS::EC2::AvailabilityZone::Name",
+      "Default" : { "Fn::Join": ["", [{ "Ref": "AWS::Region" }, "b"]]},
+      "Description" : "Select an availability zone for Subnet 2."
+    },
+    "AvailabilityZone3": {
+      "Type" : "AWS::EC2::AvailabilityZone::Name",
+      "Default" : { "Fn::Join": ["", [{ "Ref": "AWS::Region" }, "c"]]},
+      "Description" : "Select an availability zone for Subnet 3."
+    }
+  },
+  "Resources": {
+    "EKSClusterRole": {
+      "Type" : "AWS::IAM::Role",
+      "Properties" : {
+          "AssumeRolePolicyDocument" : {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": [
+                        "eks.amazonaws.com"
+                    ]
+                },
+                "Action": [
+                    "sts:AssumeRole"
+                ]
+              }
+            ]
+          },
+          "Description" : "IAM Role for EKS cluster",
+          "ManagedPolicyArns" : [ 
+            "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+            "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+            "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+            "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy",
+            "arn:aws:iam::aws:policy/AmazonEKSLocalOutpostClusterPolicy",
+            "arn:aws:iam::aws:policy/AmazonEKSServicePolicy",
+            "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+            "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+          ],
+          "RoleName" : "CFEKSClusterRole",
+          "Tags" : [ {
+            "Key": "Demo",
+            "Value": "Graylog API Security"
+          } ]
+        }
+    },
+    "EKSNodeRole": {
+      "Type" : "AWS::IAM::Role",
+      "Properties" : {
+          "AssumeRolePolicyDocument" :  {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": [
+                        "ec2.amazonaws.com"
+                    ]
+                },
+                "Action": [
+                    "sts:AssumeRole"
+                ]
+              }
+            ]
+          },
+          "Description" :"IAM Role for EKS Node group",
+          "ManagedPolicyArns" : [ 
+            "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",
+            "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+            "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+            "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+          ],
+          "RoleName" : "CFEKSNodeRole",
+          "Tags" : [ {
+            "Key": "Demo",
+            "Value": "Graylog API Security"
+          } ]
+        }
+    },
+    "VPC": {
+      "Type" : "AWS::EC2::VPC",
+      "Properties" : {
+          "CidrBlock" : {"Ref": "VPCCIDR"},
+          "EnableDnsHostnames" : true,
+
+          "Tags" : [ {
+            "Key": "Demo",
+            "Value": "Graylog API Security"
+          } ]
+        }
+    },
+    "Subnet1": {
+      "Type" : "AWS::EC2::Subnet",
+      "Properties" : {
+        "AvailabilityZone" : {"Ref": "AvailabilityZone1"},
+        "CidrBlock" : { "Fn::Select" : [ "0", {"Ref" : "SubnetIpBlocks"} ] },
+        "MapPublicIpOnLaunch" : true,
+        "PrivateDnsNameOptionsOnLaunch": {
+          "EnableResourceNameDnsAAAARecord" : false,
+          "EnableResourceNameDnsARecord" : false,
+          "HostnameType" : "ip-name"
+        },
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ],
+        "VpcId" : { "Ref" : "VPC" }
+      }
+    },
+    "Subnet2": {
+      "Type" : "AWS::EC2::Subnet",
+      "Properties" : {
+          "AvailabilityZone" : {"Ref": "AvailabilityZone2"},
+          "CidrBlock" : { "Fn::Select" : [ "1", {"Ref" : "SubnetIpBlocks"} ] },
+          "MapPublicIpOnLaunch" : true,
+          "PrivateDnsNameOptionsOnLaunch": {
+            "EnableResourceNameDnsAAAARecord" : false,
+            "EnableResourceNameDnsARecord" : false,
+            "HostnameType" : "ip-name"
+          },          
+          "Tags" : [ {
+            "Key": "Demo",
+            "Value": "Graylog API Security"
+          } ],
+          "VpcId" : { "Ref" : "VPC" }
+        }
+    },
+    "Subnet3": {
+      "Type" : "AWS::EC2::Subnet",
+      "Properties" : {
+        "AvailabilityZone" : {"Ref": "AvailabilityZone3"},
+        "CidrBlock" : { "Fn::Select" : [ "2", {"Ref" : "SubnetIpBlocks"} ] },
+        "MapPublicIpOnLaunch" : true,
+        "PrivateDnsNameOptionsOnLaunch": {
+          "EnableResourceNameDnsAAAARecord" : false,
+          "EnableResourceNameDnsARecord" : false,
+          "HostnameType" : "ip-name"
+        },
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ],
+        "VpcId" : { "Ref" : "VPC" }
+      }
+    },
+    "InternetGateway": {
+      "Type" : "AWS::EC2::InternetGateway",
+      "Properties" : {
+          "Tags" : [ {
+            "Key": "Demo",
+            "Value": "Graylog API Security"
+          } ]
+        }
+    },
+    "GatewayAttachment": {
+      "Type" : "AWS::EC2::VPCGatewayAttachment",
+      "Properties" : {
+          "InternetGatewayId" : { "Ref": "InternetGateway"},
+          "VpcId" : { "Ref": "VPC" }
+        }
+    },
+    "RouteTable": {
+      "Type" : "AWS::EC2::RouteTable",
+      "Properties" : {
+          "Tags" : [ {
+            "Key": "Demo",
+            "Value": "Graylog API Security"
+          } ],
+          "VpcId" : { "Ref" : "VPC" }
+        }
+    },
+    "Route": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": "GatewayAttachment",
+      "Properties": {
+        "RouteTableId": { "Ref": "RouteTable" },
+        "GatewayId": { "Ref":  "InternetGateway" },
+        "DestinationCidrBlock": "0.0.0.0/0"
+      }
+    },
+    "RouteTableAssociation1": {
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+          "RouteTableId" : { "Ref" : "RouteTable" },
+          "SubnetId" : { "Ref" : "Subnet1" }
+        }
+    },
+    "RouteTableAssociation2": {
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+        "RouteTableId" : { "Ref" : "RouteTable" },
+        "SubnetId" : { "Ref" : "Subnet2" }
+      }
+    },
+    "RouteTableAssociation3": {
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+        "RouteTableId" : { "Ref" : "RouteTable" },
+        "SubnetId" : { "Ref" : "Subnet3" }
+      }
+    },
+    "Cluster": {
+      "Type" : "AWS::EKS::Cluster",
+      "Properties" : {
+          "AccessConfig" : {
+            "AuthenticationMode" : "API_AND_CONFIG_MAP"
+          }
+          ,
+          "Name" : { "Ref": "ClusterName" },
+          "ResourcesVpcConfig" : {
+            "EndpointPrivateAccess" : true,
+            "EndpointPublicAccess" : true,
+            "SubnetIds" : { "Ref" : "DbSubnetIpBlocks" }
+          }
+          ,
+          "RoleArn" : {"Fn::GetAtt" : ["EKSClusterRole", "Arn"] },
+          "Tags" : [ {
+            "Key": "Demo",
+            "Value": "Graylog API Security"
+          } ],
+          "Version" : { "Ref": "KubernetesVersion" }
+        }
+    },
+    "Nodes": {
+      "Type" : "AWS::EKS::Nodegroup",
+      "Properties" : {
+          "ClusterName" : { "Ref": "ClusterName" },
+          "DiskSize" : 20,
+          "InstanceTypes" : [ "m7i.2xlarge", "m7g.2xlarge" ],
+          "NodegroupName" : { "Fn::Join": ["-", [{ "Ref": "ClusterName" }, "nodes"]] },
+          "NodeRole" : {"Fn::GetAtt" : ["EKSNodeRole", "Arn"] },
+          "ScalingConfig" : {
+            "DesiredSize" : { "Ref": "NodeCount" },
+            "MaxSize" : { "Ref": "NodeCount" },
+            "MinSize" : 0
+          }
+          ,
+          "Subnets" : { "Ref" : "DbSubnetIpBlocks" }
+        }
+    },
+    "VpcCni": {
+      "Type" : "AWS::EKS::Addon",
+      "Properties" : {
+          "AddonName" : "vpc-cni",
+          "AddonVersion" : "v1.16.0-eksbuild.1",
+          "ClusterName" : { "Ref": "ClusterName" },
+          "PreserveOnDelete" : false,
+          "Tags" : [ {
+            "Key": "Demo",
+            "Value": "Graylog API Security"
+          } ]
+        }
+    },
+    "CoreDNS": {
+      "Type" : "AWS::EKS::Addon",
+      "Properties" : {
+        "AddonName" : "coredns",
+        "AddonVersion" : "v1.11.1-eksbuild.4",
+        "ClusterName" : { "Ref": "ClusterName" },
+        "PreserveOnDelete" : false,
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ]
+      }
+    },
+    "EbsCsi": {
+      "Type" : "AWS::EKS::Addon",
+      "Properties" : {
+        "AddonName" : "aws-ebs-csi-driver",
+        "AddonVersion" : "v1.28.0-eksbuild.1",
+        "ClusterName" : { "Ref": "ClusterName" },
+        "PreserveOnDelete" : false,
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ]
+      }
+    },
+    "OutputBucket": {
+      "Type" : "AWS::S3::Bucket",
+      "Properties" : {
+          "BucketName" : { "Fn::Join": ["-", [{ "Ref": "AWS::StackId" }, "bucket"]] },
+          "LifecycleConfiguration" : {
+            "ExpirationInDays": 1
+          },
+          "Tags" : [ {
+            "Key": "Demo",
+            "Value": "Graylog API Security"
+          } ]         
+        }
+    },
+    "HelmInstallerSG": {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+          "GroupDescription" : "Security Group for chart installer instance",
+          "GroupName" : { "Fn::Join": ["-", [{ "Ref": "AWS::StackId" }, "sg"]] },
+          "SecurityGroupEgress" : [ {
+            "CidrIp" : "0.0.0.0/0",
+            "Description" : "Allows outbound traffic to all locations",
+            "FromPort" : 0,
+            "ToPort" : 65535,
+            "IpProtocol" : "-1"
+          } ],
+          "SecurityGroupIngress" : [ {
+            "CidrIp" : "0.0.0.0/0",
+            "Description" : "Allows inbound traffic from all locations",
+            "FromPort" : 0,
+            "ToPort" : 65535,
+            "IpProtocol" : "-1"
+          } ],
+          "Tags" : [ {
+            "Key": "Demo",
+            "Value": "Graylog API Security"
+          } ],
+          "VpcId" : { "Ref": "VPC" }
+        }
+    },
+    "HelmInstaller": {
+      "Type" : "AWS::EC2::Instance",
+      "DependsOn": [ "VPC" ],
+      "Properties" : {
+          "InstanceInitiatedShutdownBehavior" : "terminate",
+          "InstanceType" : "t2.micro",
+          "SecurityGroupIds" : [ { "Ref": "HelmInstallerSG" } ],
+          "Tags" : [ {
+            "Key": "Demo",
+            "Value": "Graylog API Security"
+          } ],
+          "UserData" : {
+            "Fn::Base64": {
+              "Fn::Join": ["", [
+                "#!/bin/bash\n",
+                "set -x\n",
+                "yum update -y\n",
+                "curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3\n",
+                "chmod 700 get_helm.sh\n",
+                "source get_helm.sh\n",
+                { "Fn::Sub": [ "aws eks update-kubeconfig --name ${cluster}\n", { "cluster": { "Ref": "ClusterName" } } ] },
+                "helm repo add resurfaceio https://resurfaceio.github.io/containers\n",
+                "helm repo add jetstack https://charts.jetstack.io\n",
+                "helm repo update\n",
+                "helm install cert-manager jetstack/cert-manager --create-namespace --namespace resurface --version v1.14.4 --set installCRDs=true --set prometheus.enabled=false\n",
+                "helm install resurface resurfaceio/resurface --namespace resurface --set provider=aws ",
+                "--set iceberg.enabled=true --set minio.enabled=true --set minio.rootUser=minio --set minio.rootPassword=minio123 --set minio.persistence.size=100Gi --set ingress.minio.expose=true ",
+                "> /tmp/notes.txt\n",
+                "sleep 20\n",
+                "echo http://$(kubectl get svc resurface-kubernetes-ingress --namespace resurface --template \"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}\")/ui/ > /tmp/url.txt\n",
+                { "Fn::Sub": [ "aws s3 cp ~/.kube/config s3://$(bucket)/kubeconfig\n", { "bucket": { "Ref": "OutputBucket" } } ] },
+                { "Fn::Sub": [ "aws s3 cp /tmp/notes.txt s3://$(bucket)/notes.txt\n", { "bucket": { "Ref": "OutputBucket" } } ] },
+                { "Fn::Sub": [ "aws s3 cp /tmp/url.txt s3://<bucket>/url.txt\n", { "bucket": { "Ref": "OutputBucket" } } ] },
+                "#shutdown -h now\n",
+                "shutdown -h +10 minutes"
+              ]]
+            }
+          }
+        }
+    }    
+  },
+  "Outputs": {
+    "Cluster name": {
+      "Description": "Name of your EKS cluster. Connect to it to run helm commands from your terminal, using the aws cli: aws eks update-kubeconfig --name <Cluster name>",
+      "Value": { "Ref": "ClusterName" }
+    },
+    "Output bucket": {
+      "Description": "Name of the S3 bucket containing cluster info",
+      "Value": { "Ref": "OutputBucket" }
+    },
+    "Output bucket domain name": {
+      "Description": "Domain name of the S3 bucket contianing cluster info",
+      "Value": { "Fn::GetAtt": [ "OutputBucket", "DomainName"] }
+    },
+    "LB Hostname": {
+      "Description": "Information about the value",
+      "Value": "Value to return"
+    },
+    "Helm release notes": {
+      "Description": "Information about the value",
+      "Value": "Value to return"
+    },
+    "Kubeconfig file": {
+      "Description": "Information about the value",
+      "Value": "Value to return"
+    },
+    "Web UI URL": {
+      "Description": "Information about the value",
+      "Value": "Value to return"
+    },
+    "Capture URL": {
+      "Description": "Information about the value",
+      "Value": "Value to return"
+    }
+  }
+}
