@@ -1,0 +1,198 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Deploys EKS cluster with VPC",
+  "Parameters": {
+    "EKSClusterName": {
+      "Type" : "String",
+      "Description" : "Enter a name for your EKS cluster. Required."
+    },
+    "VPC": {
+      "Type": "AWS::EC2::VPC::Id",
+      "Description": "Select the VPC where your EKS cluster is located. Required."
+    },
+    "VPCSubnet": {
+      "Type" : "AWS::EC2::Subnet::Id",
+      "Description" : "Select a Subnet from in your selected VPC. Required."
+    },
+    "TempHelmInstallerAMI": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64",
+      "Description": "AL2023 AMI lookup path for temporary EC2 instance to install helm chart."
+    }
+  },
+  "Resources": {
+    "OutputBucket": {
+      "Type" : "AWS::S3::Bucket",
+      "Properties" : {
+        "BucketName" : { "Fn::Join": ["-", [{ "Ref": "AWS::StackName" }, "bucket"]] },
+        "LifecycleConfiguration" : {
+          "Rules": [ {
+            "Id": "OneDayExpiry",
+            "Status": "Enabled",
+            "ExpirationInDays": 1
+          } ]
+        },
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ]
+      }
+    },
+    "HelmInstallerRole": {
+      "Type" : "AWS::IAM::Role",
+      "Properties" : {
+        "AssumeRolePolicyDocument" :  {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                  "Service": [
+                      "ec2.amazonaws.com"
+                  ]
+              },
+              "Action": [
+                  "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Description" :"IAM Role for EC2 instance to install Helm chart for EKS cluster",
+        "RoleName" : "CFHelmInstallerRole",
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ]
+      }
+    },
+    "HelmInstallerAccessEntry": {
+      "Type" : "AWS::EKS::AccessEntry",
+      "Properties" : {
+        "AccessPolicies" : [ {
+          "AccessScope" : {
+            "Type": "cluster"
+          },
+          "PolicyArn" : "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+        } ],
+        "ClusterName" : { "Ref": "EKSClusterName" },
+        "KubernetesGroups" : [ "cluster-admin" ],
+        "PrincipalArn" : { "Fn::GetAtt": ["HelmInstallerRole", "Arn"] },
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ]
+      }
+    },
+    "HelmInstallerSG": {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Security Group for chart installer instance",
+        "GroupName" : { "Fn::Join": ["-", [{ "Ref": "AWS::StackId" }, "sg"]] },
+        "SecurityGroupEgress" : [ {
+          "CidrIp" : "0.0.0.0/0",
+          "Description" : "Allows outbound traffic to all locations",
+          "FromPort" : 22,
+          "ToPort" : 9999,
+          "IpProtocol" : "tcp"
+        } ],
+        "SecurityGroupIngress" : [ {
+          "CidrIp" : "0.0.0.0/0",
+          "Description" : "Allows inbound traffic from all locations",
+          "FromPort" : 22,
+          "ToPort" : 9999,
+          "IpProtocol" : "tcp"
+        } ],
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ],
+        "VpcId" : { "Ref": "VPC" }
+      }
+    },
+    "HelmInstallerInstanceProfile": {
+      "Type" : "AWS::IAM::InstanceProfile",
+      "Properties" : {
+        "Roles" : [ { "Ref": "EKSNodeRole" } ]
+      }
+    },
+    "HelmInstaller": {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "InstanceInitiatedShutdownBehavior" : "terminate",
+        "IamInstanceProfile": { "Ref" : "HelmInstallerInstanceProfile" },
+        "ImageId" : { "Ref": "TempHelmInstallerAMI" },
+        "InstanceType" : "t2.micro",
+        "NetworkInterfaces" : [ {
+          "SubnetId": {"Ref": "Subnet1"},
+          "AssociatePublicIpAddress": "true",
+          "DeviceIndex": "0",
+          "GroupSet": [{ "Ref" : "HelmInstallerSG" }]
+        } ],
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ],
+        "UserData" : {
+          "Fn::Base64": {
+            "Fn::Join": ["\n", [
+              "#!/bin/bash",
+              "set -x",
+              "yum update -y",
+              { "Fn::Sub": [ "aws eks update-kubeconfig --name ${cluster}", { "cluster": { "Ref": "EKSClusterName" } } ] },
+              "export KUBECONFIG=/root/.kube/config",
+              "curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3",
+              "chmod 700 get_helm.sh",
+              "source get_helm.sh",
+              "helm repo add resurfaceio https://resurfaceio.github.io/containers",
+              "helm repo add jetstack https://charts.jetstack.io",
+              "helm repo update",
+              "helm install cert-manager jetstack/cert-manager --create-namespace --namespace resurface --version v1.14.4 --set installCRDs=true --set prometheus.enabled=false",
+              "helm install resurface resurfaceio/resurface --namespace resurface --set provider=aws --set iceberg.enabled=true --set minio.enabled=true --set minio.rootUser=minio --set minio.rootPassword=minio123 --set minio.persistence.size=100Gi --set ingress.minio.expose=true > /tmp/notes.txt",
+              "sleep 20",
+              "echo http://$(kubectl get svc resurface-kubernetes-ingress --namespace resurface --template \"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}\")/ui/ > /tmp/url.txt",
+              { "Fn::Sub": [ "aws s3 cp /root/.kube/config s3://$(bucket)/kubeconfig", { "bucket": { "Ref": "OutputBucket" } } ] },
+              { "Fn::Sub": [ "aws s3 cp /tmp/notes.txt s3://$(bucket)/notes.txt", { "bucket": { "Ref": "OutputBucket" } } ] },
+              { "Fn::Sub": [ "aws s3 cp /tmp/url.txt s3://<bucket>/url.txt", { "bucket": { "Ref": "OutputBucket" } } ] },
+              "#shutdown -h now\n",
+              "shutdown -h +10 minutes"
+            ] ]
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ClusterName": {
+      "Description": "Name of your EKS cluster. Connect to it to run helm commands from your terminal, using the aws cli: aws eks update-kubeconfig --name <Cluster name>",
+      "Value": { "Ref": "EKSClusterName" }
+    },
+    "OutputBucketName": {
+      "Description": "Name of the S3 bucket containing cluster info",
+      "Value": { "Ref": "OutputBucket" }
+    },
+    "OutputBucketDomainName": {
+      "Description": "Domain name of the S3 bucket containing cluster info",
+      "Value": { "Fn::GetAtt": [ "OutputBucket", "DomainName"] }
+    },
+    "LBHostname": {
+      "Description": "Information about the value",
+      "Value": "Value to return"
+    },
+    "HelmNotes": {
+      "Description": "Information about the value",
+      "Value": "Value to return"
+    },
+    "Kubeconfig": {
+      "Description": "Information about the value",
+      "Value": "Value to return"
+    },
+    "URL": {
+      "Description": "Information about the value",
+      "Value": "Value to return"
+    },
+    "CaptureURL": {
+      "Description": "Information about the value",
+      "Value": "Value to return"
+    }
+  }
+}
