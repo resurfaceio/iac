@@ -25,17 +25,39 @@
       "Type" : "AWS::S3::Bucket",
       "Properties" : {
         "BucketName" : { "Fn::Join": ["-", [{ "Ref": "AWS::StackName" }, "bucket"]] },
-        "LifecycleConfiguration" : {
-          "Rules": [ {
-            "Id": "OneDayExpiry",
-            "Status": "Enabled",
-            "ExpirationInDays": 1
-          } ]
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": false,
+          "BlockPublicPolicy": false,
+          "IgnorePublicAcls": false,
+          "RestrictPublicBuckets": false
+        },
+        "WebsiteConfiguration": {
+          "ErrorDocument": "error.html",
+          "IndexDocument": "index.html"
         },
         "Tags" : [ {
           "Key": "Demo",
           "Value": "Graylog API Security"
         } ]
+      }
+    },
+    "BucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": { "Ref": "OutputBucket" },
+        "PolicyDocument": {
+          "Id": "PublicS3WebsitePolicy",
+          "Version": "2012-10-17",
+          "Statement": [ {
+            "Sid": "PublicReadForGetBucketObjects",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": {
+                "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "OutputBucket" }, "/*" ] ]
+            }
+          } ]
+        }
       }
     },
     "HelmInstallerRole": {
@@ -57,7 +79,24 @@
             }
           ]
         },
-        "Description" :"IAM Role for EC2 instance to install Helm chart for EKS cluster",
+        "Description" :"IAM Role for EC2 instance to install Helm chart for EKS cluster", 
+        "Policies" : [ {
+          "PolicyName": "root",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [ {
+              "Sid": "IamListClustersCreateBuckets",
+              "Effect": "Allow",
+              "Action": [
+                "eks:ListClusters",
+                "eks:DescribeCluster",
+                "eks:DeleteAccessEntry",
+                "s3:PutObject"
+              ],
+              "Resource": "*"
+            } ]
+          }
+        } ],
         "RoleName" : "CFHelmInstallerRole",
         "Tags" : [ {
           "Key": "Demo",
@@ -88,18 +127,27 @@
       "Properties" : {
         "GroupDescription" : "Security Group for chart installer instance",
         "GroupName" : { "Fn::Join": ["-", [{ "Ref": "AWS::StackId" }, "sg"]] },
-        "SecurityGroupEgress" : [ {
-          "CidrIp" : "0.0.0.0/0",
-          "Description" : "Allows outbound traffic to all locations",
-          "FromPort" : 22,
-          "ToPort" : 9999,
-          "IpProtocol" : "tcp"
-        } ],
+        "SecurityGroupEgress" : [
+          {
+            "CidrIp" : "0.0.0.0/0",
+            "Description" : "Allows outbound HTTP traffic",
+            "FromPort" : 80,
+            "ToPort" : 80,
+            "IpProtocol" : "tcp"
+          },
+          {
+            "CidrIp" : "0.0.0.0/0",
+            "Description" : "Allows outbound HTTPS traffic",
+            "FromPort" : 443,
+            "ToPort" : 443,
+            "IpProtocol" : "tcp"
+          }
+        ],
         "SecurityGroupIngress" : [ {
           "CidrIp" : "0.0.0.0/0",
-          "Description" : "Allows inbound traffic from all locations",
+          "Description" : "Allows inbound SSH traffic",
           "FromPort" : 22,
-          "ToPort" : 9999,
+          "ToPort" : 22,
           "IpProtocol" : "tcp"
         } ],
         "Tags" : [ {
@@ -112,7 +160,7 @@
     "HelmInstallerInstanceProfile": {
       "Type" : "AWS::IAM::InstanceProfile",
       "Properties" : {
-        "Roles" : [ { "Ref": "EKSNodeRole" } ]
+        "Roles" : [ { "Ref": "HelmInstallerRole" } ]
       }
     },
     "HelmInstaller": {
@@ -121,9 +169,10 @@
         "InstanceInitiatedShutdownBehavior" : "terminate",
         "IamInstanceProfile": { "Ref" : "HelmInstallerInstanceProfile" },
         "ImageId" : { "Ref": "TempHelmInstallerAMI" },
-        "InstanceType" : "t2.micro",
+        "InstanceType" : "t2.medium",
+        "KeyName": "resurface-kp",
         "NetworkInterfaces" : [ {
-          "SubnetId": {"Ref": "Subnet1"},
+          "SubnetId": {"Ref": "VPCSubnet"},
           "AssociatePublicIpAddress": "true",
           "DeviceIndex": "0",
           "GroupSet": [{ "Ref" : "HelmInstallerSG" }]
@@ -136,10 +185,14 @@
           "Fn::Base64": {
             "Fn::Join": ["\n", [
               "#!/bin/bash",
-              "set -x",
-              "yum update -y",
+              "#set -ex",
+              "echo \"<html xmlns=http://www.w3.org/1999/xhtml><body><h1>Uh oh</h1><p>Something went wrong with your installation, please <a href=\"mailto:api-support@graylog.com\">contact support</a> for more information.</p></body>\" > index.html",
+              { "Fn::Sub": [ "aws s3 cp index.html s3://${bucket}/index.html", { "bucket": { "Ref": "OutputBucket" } } ] },
               { "Fn::Sub": [ "aws eks update-kubeconfig --name ${cluster}", { "cluster": { "Ref": "EKSClusterName" } } ] },
               "export KUBECONFIG=/root/.kube/config",
+              "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl\"",
+              "install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl",
+              "kubectl get nodes",
               "curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3",
               "chmod 700 get_helm.sh",
               "source get_helm.sh",
@@ -147,14 +200,32 @@
               "helm repo add jetstack https://charts.jetstack.io",
               "helm repo update",
               "helm install cert-manager jetstack/cert-manager --create-namespace --namespace resurface --version v1.14.4 --set installCRDs=true --set prometheus.enabled=false",
-              "helm install resurface resurfaceio/resurface --namespace resurface --set provider=aws --set iceberg.enabled=true --set minio.enabled=true --set minio.rootUser=minio --set minio.rootPassword=minio123 --set minio.persistence.size=100Gi --set ingress.minio.expose=true > /tmp/notes.txt",
-              "sleep 20",
-              "echo http://$(kubectl get svc resurface-kubernetes-ingress --namespace resurface --template \"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}\")/ui/ > /tmp/url.txt",
-              { "Fn::Sub": [ "aws s3 cp /root/.kube/config s3://$(bucket)/kubeconfig", { "bucket": { "Ref": "OutputBucket" } } ] },
-              { "Fn::Sub": [ "aws s3 cp /tmp/notes.txt s3://$(bucket)/notes.txt", { "bucket": { "Ref": "OutputBucket" } } ] },
-              { "Fn::Sub": [ "aws s3 cp /tmp/url.txt s3://<bucket>/url.txt", { "bucket": { "Ref": "OutputBucket" } } ] },
-              "#shutdown -h now\n",
-              "shutdown -h +10 minutes"
+              "helm install resurface resurfaceio/resurface --namespace resurface --set provider=aws --set custom.config.pollingcycle=fast --set kubernetes-ingress.controller.extraArgs[0]=\"--disable-quic\" --set kubernetes-ingress.controller.service.enablePorts.quic=false --set iceberg.enabled=true --set minio.enabled=true --set minio.rootUser=minio --set minio.rootPassword=minio123 --set minio.persistence.size=100Gi --set ingress.minio.expose=true > notes.txt",
+              "timeout 5m bash -c 'until kubectl get svc resurface-kubernetes-ingress --namespace resurface --template \"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}\"; do sleep 10; done'",
+              "export DB_HOST=$(kubectl get svc resurface-kubernetes-ingress --namespace resurface --template \"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}\")",
+              "export DB_HOSTNAME=$(echo $DB_HOST | sed 's/:.*//')",
+              "echo \"<html xmlns=http://www.w3.org/1999/xhtml><meta charset=\"UTF-8\"><title>Graylog API Security | Success!</title><style>body{background-color:#303030;font-family:Arial,Helvetica,sans-serif;height:100%}pre{white-space:pre-wrap;word-wrap:break-word;padding:10px;background-color:rgba(0,0,0);margin-bottom:5px;border-radius:10px}code{background-color:inherit;color:#fff}li{padding:10px}a{font-weight:700;color:#5f0fff;text-decoration:none}details{user-select:none}details>summary span.icon{width:24px;height:24px;transition:all .3s;margin-left:10px}details[open] summary span.icon{transform:rotate(-90deg)}details[open] #icon-right{transform:rotate(90deg)}summary{display:flex;cursor:pointer}summary::-webkit-details-marker{display:none}.warning{padding:10px;background-color:#ffdd00aa;color:#000;margin-bottom:15px}</style><div style=background-color:#c0f3ff;border-radius:16px;padding:24px;margin:24px><h1>Congratulations! 🎉</h1><h3>Your Graylog API Security instance is now running.<p>Click here to access the web UI from your browser: <a href=_url_>_url_</a></p><br><h2>Helm release notes</h3><pre><code>\" > index.html",
+              "cat notes.txt >> index.html",
+              "echo \"</code></pre><br><h3>More links!</h3><li><b>Capture URL</b>: _captureurl_ 👈 use it to get API call data flowing into your system!</li><div><details><summary style=justify-content:flex-end><span class=icon id=icon-right>👉</span>(Click here to see an example in action!)</summary><p>Click <i>Import</i> and see the following mock API call appear in your Graylog API Security UI:<pre><code>curl -X POST -H \\\"Content-type: application/json\\\" \\ ",
+              "--data '[[\\\"request_method\\\",\\\"GET\\\"],[\\\"request_url\\\",\\\"http://myurl\\\"],[\\\"response_code\\\",\\\"200\\\"]]' \\ ",
+              "_captureurl_</code></pre><div style=text-align:right><button onclick=\\\"{$.ajax({type: 'POST', url: '_captureurl_', data: '[[&quot;request_method&quot;,&quot;GET&quot;],[&quot;request_url&quot;, &quot;http://myurl&quot;],[&quot;response_code&quot;,&quot;200&quot;]]'});}\\\">Import</button></div></details></div><li><b>MinIO web console UI</b>: <a href=\"_miniourl_\">_miniourl_</a><li><a href=https://resurface.io/docs>Graylog API Security Docs</a><li><a href=https://community.graylog.org/c/api-security/41>Graylog Community</a></li><br><h3>Connecting to your Kubernetes cluster</h3><p>You can connect to your cluster to run helm commands from your terminal*, using the aws cli:<pre><code>aws eks update-kubeconfig --name _cluster_</code></pre><p>* The following tools must be installed and configured in your system: <a href=https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html>aws</a>, <a href=https://kubernetes.io/docs/tasks/tools/#kubectl>kubectl</a>, <a href=https://helm.sh/docs/intro/install/ >helm</a><details><summary>(You can also click here to see the raw kubeconfig)<span class=icon>👈</span></summary><pre><code>\" >> index.html",
+              "cat $KUBECONFIG >> index.html",
+              "echo \"</code></pre></details><br><h4>Tearing down your CloudFormation Stack</h4><p>Before deleting you CloudFormation Stack, the html file for this page should be removed from its S3 bucket. The stack can be deleted once the S3 bucket is empty.<p class=warning><b>Warning</b>: Deleting your CloudFormation Stack will delete your Graylog API Security installation, and all the data contained in it. Make sure to back up any data you want to keep.</p><script src=http://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js></script><br></div>\" >> index.html",
+              "sed -i \"s|_url_|http://$DB_HOST/ui|g\" index.html",
+              "sed -i \"s|_captureurl_|http://$DB_HOST/fluke/message|g\" index.html",
+              "sed -i \"s|_miniourl_|http://$DB_HOSTNAME:9001/|g\" index.html",
+              { "Fn::Sub": [ "sed -i \"s|_cluster_|${cluster}|g\" index.html", { "cluster": { "Ref": "EKSClusterName" } } ] },
+              "echo \"<html xmlns=http://www.w3.org/1999/xhtml><title>Not found</title><style>html{height:100%}body{font-family:Lato,sans-serif;background-color:#303030;color:#888;margin:0}#main{display:table;width:100%;height:100vh;text-align:center}a{color:white;}</style><div id=main><h1>There is nothing here</h1><a href=/index.html>Go back to index</a><br><br><a href=_url_>Go to Graylog API Security UI</a></div>\" > error.html",
+              "sed -i \"s|_url_|http://$DB_HOST/ui|g\" error.html",
+              { "Fn::Sub": [ "aws s3 cp index.html s3://${bucket}/index.html", { "bucket": { "Ref": "OutputBucket" } } ] },
+              { "Fn::Sub": [ "aws s3 cp error.html s3://${bucket}/error.html", { "bucket": { "Ref": "OutputBucket" } } ] },
+              "yum update -y && yum install unzip -y && yum remove awscli -y",
+              "curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\"",
+              "unzip -qq awscliv2.zip",
+              "./aws/install > /dev/null",
+              { "Fn::Sub": [ "/usr/local/bin/aws eks delete-access-entry --cluster-name ${cluster} --principal-arn ${principal}", { "cluster": { "Ref": "EKSClusterName" }, "principal": { "Fn::GetAtt": ["HelmInstallerRole", "Arn"] } } ] },
+              "#shutdown -h +10 minutes",
+              "shutdown -h now"
             ] ]
           }
         }
@@ -166,33 +237,9 @@
       "Description": "Name of your EKS cluster. Connect to it to run helm commands from your terminal, using the aws cli: aws eks update-kubeconfig --name <Cluster name>",
       "Value": { "Ref": "EKSClusterName" }
     },
-    "OutputBucketName": {
-      "Description": "Name of the S3 bucket containing cluster info",
-      "Value": { "Ref": "OutputBucket" }
-    },
-    "OutputBucketDomainName": {
-      "Description": "Domain name of the S3 bucket containing cluster info",
-      "Value": { "Fn::GetAtt": [ "OutputBucket", "DomainName"] }
-    },
-    "LBHostname": {
-      "Description": "Information about the value",
-      "Value": "Value to return"
-    },
-    "HelmNotes": {
-      "Description": "Information about the value",
-      "Value": "Value to return"
-    },
-    "Kubeconfig": {
-      "Description": "Information about the value",
-      "Value": "Value to return"
-    },
-    "URL": {
-      "Description": "Information about the value",
-      "Value": "Value to return"
-    },
-    "CaptureURL": {
-      "Description": "Information about the value",
-      "Value": "Value to return"
+    "SuccessURL": {
+      "Description": "Graylog API Security installation notes. They include the web UI access URL, DB capture URL, and kubeconfig file (You might need to give it a few minutes to update).",
+      "Value": { "Fn::GetAtt": [ "OutputBucket", "WebsiteURL"] }
     }
   }
 }
