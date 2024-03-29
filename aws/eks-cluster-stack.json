@@ -32,27 +32,9 @@
       "Description": "Enter a CIDR block for the new VPC. Default is 10.10.0.0/16",
       "ConstraintDescription": "Must be a valid CIDR of the form x.x.x.x/x"
     },
-    "VPCSubnetCIDRBlocks": {
-      "Type": "CommaDelimitedList",
-      "Default": "10.10.0.0/20, 10.10.16.0/20, 10.10.32.0/20",
-      "Description": "Comma-delimited list of three CIDR blocks for Subnets. Must belong within VPC CIDR block. Defaults to [10.10.0.0/20, 10.10.16.0/20, 10.10.32.0/20]"
-    },
-    "VPCSubnetZone1": {
-      "Type" : "AWS::EC2::AvailabilityZone::Name",
-      "Description" : "Select an availability zone for Subnet 1. Required."
-    },
-    "VPCSubnetZone2": {
-      "Type" : "AWS::EC2::AvailabilityZone::Name",
-      "Description" : "Select an availability zone for Subnet 2. Required."
-    },
-    "VPCSubnetZone3": {
-      "Type" : "AWS::EC2::AvailabilityZone::Name",
-      "Description" : "Select an availability zone for Subnet 3. Required."
-    },
-    "TempHelmInstallerAMI": {
-      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-      "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64",
-      "Description": "AL2023 AMI lookup path for temporary EC2 instance to install helm chart."
+    "SubnetAZs": {
+      "Type" : "List<AWS::EC2::AvailabilityZone::Name>",
+      "Description" : "Select 3 availability zones to create cluster Subnets. Required."
     }
   },
   "Conditions": {
@@ -131,8 +113,8 @@
     },
     "VPC": {
       "Type" : "AWS::EC2::VPC",
-      "Prperties" : {
-        "CidrBlock" : {"Ref": "VPCAddressBlock"},
+      "Properties" : {
+        "CidrBlock" : { "Ref": "VPCAddressBlock" },
         "EnableDnsHostnames" : true,
         "Tags" : [ {
           "Key": "Demo",
@@ -143,8 +125,8 @@
     "Subnet1": {
       "Type" : "AWS::EC2::Subnet",
       "Properties" : {
-        "AvailabilityZone" : {"Ref": "VPCSubnetZone1"},
-        "CidrBlock" : { "Fn::Select" : [ "0", {"Ref" : "VPCSubnetCIDRBlocks"} ] },
+        "AvailabilityZone" : { "Fn::Select" : [ "0", { "Ref": "SubnetAZs" } ] },
+        "CidrBlock" : { "Fn::Select" : [ "0", { "Fn::Cidr" : [ { "Ref": "VPCAddressBlock" } , 3, 12] } ] },
         "MapPublicIpOnLaunch" : true,
         "PrivateDnsNameOptionsOnLaunch": {
           "EnableResourceNameDnsAAAARecord" : false,
@@ -161,8 +143,8 @@
     "Subnet2": {
       "Type" : "AWS::EC2::Subnet",
       "Properties" : {
-        "AvailabilityZone" : {"Ref": "VPCSubnetZone2"},
-        "CidrBlock" : { "Fn::Select" : [ "1", {"Ref" : "VPCSubnetCIDRBlocks"} ] },
+        "AvailabilityZone" : { "Fn::Select" : [ "1", { "Ref": "SubnetAZs" } ] },
+        "CidrBlock" : { "Fn::Select" : [ "1", { "Fn::Cidr" : [ { "Ref": "VPCAddressBlock" } , 3, 12] } ] },
         "MapPublicIpOnLaunch" : true,
         "PrivateDnsNameOptionsOnLaunch": {
           "EnableResourceNameDnsAAAARecord" : false,
@@ -179,8 +161,8 @@
     "Subnet3": {
       "Type" : "AWS::EC2::Subnet",
       "Properties" : {
-        "AvailabilityZone" : {"Ref": "VPCSubnetZone3"},
-        "CidrBlock" : { "Fn::Select" : [ "2", {"Ref" : "VPCSubnetCIDRBlocks"} ] },
+        "AvailabilityZone" : { "Fn::Select" : [ "2", { "Ref": "SubnetAZs" } ] },
+        "CidrBlock" : { "Fn::Select" : [ "2", { "Fn::Cidr" : [ { "Ref": "VPCAddressBlock" } , 3, 12] } ] },
         "MapPublicIpOnLaunch" : true,
         "PrivateDnsNameOptionsOnLaunch": {
           "EnableResourceNameDnsAAAARecord" : false,
