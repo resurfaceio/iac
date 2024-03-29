@@ -143,13 +143,6 @@
             "IpProtocol" : "tcp"
           }
         ],
-        "SecurityGroupIngress" : [ {
-          "CidrIp" : "0.0.0.0/0",
-          "Description" : "Allows inbound SSH traffic",
-          "FromPort" : 22,
-          "ToPort" : 22,
-          "IpProtocol" : "tcp"
-        } ],
         "Tags" : [ {
           "Key": "Demo",
           "Value": "Graylog API Security"
@@ -169,8 +162,7 @@
         "InstanceInitiatedShutdownBehavior" : "terminate",
         "IamInstanceProfile": { "Ref" : "HelmInstallerInstanceProfile" },
         "ImageId" : { "Ref": "TempHelmInstallerAMI" },
-        "InstanceType" : "t2.medium",
-        "KeyName": "resurface-kp",
+        "InstanceType" : "t2.micro",
         "NetworkInterfaces" : [ {
           "SubnetId": {"Ref": "VPCSubnet"},
           "AssociatePublicIpAddress": "true",
