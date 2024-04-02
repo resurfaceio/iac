@@ -11,20 +11,19 @@
       "Description": "Select the VPC where your EKS cluster is located. Required."
     },
     "VPCSubnet": {
-      "Type" : "AWS::EC2::Subnet::Id",
-      "Description" : "Select a Subnet from in your selected VPC. Required."
+      "Type": "AWS::EC2::Subnet::Id",
+      "Description": "Select a Subnet from in your selected VPC. Required."
     },
-    "TempHelmInstallerAMI": {
-      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-      "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64",
-      "Description": "AL2023 AMI lookup path for temporary EC2 instance to install helm chart."
+    "S3BucketName": {
+      "Type": "String",
+      "Description": "Enter a name for the bucket to host static page with installation results."
     }
   },
   "Resources": {
     "OutputBucket": {
       "Type" : "AWS::S3::Bucket",
       "Properties" : {
-        "BucketName" : { "Fn::Join": ["-", [{ "Ref": "AWS::StackName" }, "bucket"]] },
+        "BucketName" : { "Ref": "S3BucketName" },
         "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": false,
           "BlockPublicPolicy": false,
@@ -114,7 +113,6 @@
           "PolicyArn" : "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
         } ],
         "ClusterName" : { "Ref": "EKSClusterName" },
-        "KubernetesGroups" : [ "cluster-admin" ],
         "PrincipalArn" : { "Fn::GetAtt": ["HelmInstallerRole", "Arn"] },
         "Tags" : [ {
           "Key": "Demo",
@@ -161,7 +159,7 @@
       "Properties" : {
         "InstanceInitiatedShutdownBehavior" : "terminate",
         "IamInstanceProfile": { "Ref" : "HelmInstallerInstanceProfile" },
-        "ImageId" : { "Ref": "TempHelmInstallerAMI" },
+        "ImageId" : "ami-0e0c22b1ff6ba8221",
         "InstanceType" : "t2.micro",
         "NetworkInterfaces" : [ {
           "SubnetId": {"Ref": "VPCSubnet"},
@@ -196,9 +194,9 @@
               "timeout 5m bash -c 'until kubectl get svc resurface-kubernetes-ingress --namespace resurface --template \"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}\"; do sleep 10; done'",
               "export DB_HOST=$(kubectl get svc resurface-kubernetes-ingress --namespace resurface --template \"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}\")",
               "export DB_HOSTNAME=$(echo $DB_HOST | sed 's/:.*//')",
-              "echo \"<html xmlns=http://www.w3.org/1999/xhtml><meta charset=\"UTF-8\"><title>Graylog API Security | Success!</title><style>body{background-color:#303030;font-family:Arial,Helvetica,sans-serif;height:100%}pre{white-space:pre-wrap;word-wrap:break-word;padding:10px;background-color:rgba(0,0,0);margin-bottom:5px;border-radius:10px}code{background-color:inherit;color:#fff}li{padding:10px}a{font-weight:700;color:#5f0fff;text-decoration:none}details{user-select:none}details>summary span.icon{width:24px;height:24px;transition:all .3s;margin-left:10px}details[open] summary span.icon{transform:rotate(-90deg)}details[open] #icon-right{transform:rotate(90deg)}summary{display:flex;cursor:pointer}summary::-webkit-details-marker{display:none}.warning{padding:10px;background-color:#ffdd00aa;color:#000;margin-bottom:15px}</style><div style=background-color:#c0f3ff;border-radius:16px;padding:24px;margin:24px><h1>Congratulations! 🎉</h1><h3>Your Graylog API Security instance is now running.<p>Click here to access the web UI from your browser: <a href=_url_>_url_</a></p><br><h2>Helm release notes</h3><pre><code>\" > index.html",
+              "echo \"<html xmlns=http://www.w3.org/1999/xhtml><meta charset=\"UTF-8\"><title>Graylog API Security | Success!</title><style>body{background-color:#303030;font-family:Arial,Helvetica,sans-serif;height:100%}pre{white-space:pre-wrap;word-wrap:break-word;padding:10px;background-color:rgba(0,0,0);margin-bottom:5px;border-radius:10px}code{background-color:inherit;color:#fff}li{padding:10px}a{font-weight:700;color:#5f0fff;text-decoration:none}details{user-select:none}details>summary span.icon{width:24px;height:24px;transition:all .3s;margin-left:10px}details[open] summary span.icon{transform:rotate(-90deg)}details[open] #icon-right{transform:rotate(90deg)}summary{display:flex;cursor:pointer}summary::-webkit-details-marker{display:none}.warning{padding:10px;background-color:#ffdd00aa;color:#000;margin-bottom:15px}</style><div style=background-color:#c0f3ff;border-radius:16px;padding:24px;margin:24px><h1>Congratulations! 🎉</h1><h3>Your Graylog API Security instance is now running.</h3><p>Click here to access the web UI from your browser: <a href=_url_>_url_</a></p><br><h2>Helm release notes</h2><pre><code>\" > index.html",
               "cat notes.txt >> index.html",
-              "echo \"</code></pre><br><h3>More links!</h3><li><b>Capture URL</b>: _captureurl_ 👈 use it to get API call data flowing into your system!</li><div><details><summary style=justify-content:flex-end><span class=icon id=icon-right>👉</span>(Click here to see an example in action!)</summary><p>Click <i>Import</i> and see the following mock API call appear in your Graylog API Security UI:<pre><code>curl -X POST -H \\\"Content-type: application/json\\\" \\ ",
+              "echo \"</code></pre><br><h3>More links!</h3><li><b>Capture URL</b>: <pre><code>_captureurl_</code></pre> Use it to get API call data flowing into your system!</li><div><details><summary style=justify-content:flex-end><span class=icon id=icon-right>👉</span>(Click here to see an example in action!)</summary><p>Click <i>Import</i> and see the following mock API call appear in your Graylog API Security UI:<pre><code>curl -X POST -H \\\"Content-type: application/json\\\" \\ ",
               "--data '[[\\\"request_method\\\",\\\"GET\\\"],[\\\"request_url\\\",\\\"http://myurl\\\"],[\\\"response_code\\\",\\\"200\\\"]]' \\ ",
               "_captureurl_</code></pre><div style=text-align:right><button onclick=\\\"{$.ajax({type: 'POST', url: '_captureurl_', data: '[[&quot;request_method&quot;,&quot;GET&quot;],[&quot;request_url&quot;, &quot;http://myurl&quot;],[&quot;response_code&quot;,&quot;200&quot;]]'});}\\\">Import</button></div></details></div><li><b>MinIO web console UI</b>: <a href=\"_miniourl_\">_miniourl_</a><li><a href=https://resurface.io/docs>Graylog API Security Docs</a><li><a href=https://community.graylog.org/c/api-security/41>Graylog Community</a></li><br><h3>Connecting to your Kubernetes cluster</h3><p>You can connect to your cluster to run helm commands from your terminal*, using the aws cli:<pre><code>aws eks update-kubeconfig --name _cluster_</code></pre><p>* The following tools must be installed and configured in your system: <a href=https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html>aws</a>, <a href=https://kubernetes.io/docs/tasks/tools/#kubectl>kubectl</a>, <a href=https://helm.sh/docs/intro/install/ >helm</a><details><summary>(You can also click here to see the raw kubeconfig)<span class=icon>👈</span></summary><pre><code>\" >> index.html",
               "cat $KUBECONFIG >> index.html",
