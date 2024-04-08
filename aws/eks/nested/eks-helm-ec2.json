@@ -31,8 +31,8 @@
           "RestrictPublicBuckets": false
         },
         "WebsiteConfiguration": {
-          "ErrorDocument": "error.html",
-          "IndexDocument": "index.html"
+          "ErrorDocument": "404.html",
+          "IndexDocument": "success.html"
         },
         "Tags" : [ {
           "Key": "Demo",
