@@ -1,0 +1,116 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8">
+    <title>Graylog API Security | Success!</title>
+    <style>
+      body {
+        background-color: #303030;
+        font-family: Arial, Helvetica, sans-serif;
+        height: 100%;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        padding: 10px;
+        background-color: rgba(0, 0, 0);
+        margin-bottom: 5px;
+        border-radius: 10px;
+      }
+      code {
+        background-color: inherit;
+        color: #fff;
+      }
+      li {
+        padding: 10px;
+      }
+      a {
+        font-weight: 700;
+        color: #5f0fff;
+        text-decoration: none;
+      }
+      details {
+        user-select: none;
+      }
+      details>summary span.icon {
+        width: 24px;
+        height: 24px;
+        transition: all 0.3s;
+        margin-left: 10px;
+      }
+      details[open] summary span.icon {
+        transform: rotate(-90deg);
+      }
+      details[open] #icon-right {
+        transform: rotate(90deg);
+      }
+      summary {
+        display: flex;
+        cursor: pointer;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      .container {
+        background-color: #C0F3FF;
+        border-radius: 16px;
+        padding: 24px;
+        margin: 24px;
+      }
+      .warning {
+        padding: 10px;
+        background-color: #ffdd00aa;
+        color: #000;
+        margin-bottom: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Congratulations! 🎉</h1>
+      <h3>Your Graylog API Security instance is now running.</h3>
+      <p>Click here to access the web UI from your browser: <a href="_url_">_url_</a></p>
+      <br>
+      <h2>Helm release notes</h2>
+      <pre><code>_notes_</code></pre>
+      <br>
+      <h3>More links!</h3>
+      <li><b>Capture URL</b>:
+        <pre><code>_captureurl_</code></pre> Use it to get API call data flowing into your system!
+      </li>
+      <div>
+        <details>
+          <summary style="justify-content: flex-end;"><span class="icon" id="icon-right">👉</span>(Click here to see an
+            example in action!)</summary>
+          <p>Click <i>Import</i> and see the following mock API call appear in your Graylog API Security UI:</p>
+          <pre><code>curl -X POST -H "Content-type: application/json" \
+            --data '[["request_method","GET"],["request_url","http://myurl"],["response_code","200"]]' \
+            _captureurl_</code></pre>
+          <div style="text-align: right;"><button
+              onclick="{$.ajax({type: 'POST', url: '_captureurl_', data: '[[&quot;request_method&quot;,&quot;GET&quot;],[&quot;request_url&quot;, &quot;http://myurl&quot;],[&quot;response_code&quot;,&quot;200&quot;]]'});}">Import</button>
+          </div>
+        </details>
+      </div>
+      <li><b>MinIO web console UI</b>: <a href="_miniourl_">_miniourl_</a></li>
+      <li><a href="https://resurface.io/docs">Graylog API Security Docs</a></li>
+      <li><a href="https://community.graylog.org/c/api-security/41">Graylog Community</a></li>
+      <br>
+      <h3>Connecting to your Kubernetes cluster</h3>
+      <p>You can connect to your cluster to run helm commands from your terminal*, using the aws cli:</p>
+      <pre><code>aws eks update-kubeconfig --name _cluster_</code></pre>
+      <p>* The following tools must be installed and configured in your system: <a
+          href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">aws</a>, <a
+          href="https://kubernetes.io/docs/tasks/tools/#kubectl">kubectl</a>, <a
+          href="https://helm.sh/docs/intro/install/">helm</a></p>
+      <details>
+        <summary>(You can also click here to see the raw kubeconfig)<span class="icon">👈</span></summary>
+        <pre><code>_kubeconfig_</code></pre>
+      </details>
+      <br>
+      <h4>Tearing down your CloudFormation Stack</h4>
+      <p>Before deleting you CloudFormation Stack, the html file for this page should be removed from its S3 bucket. The stack can be deleted once the S3 bucket is empty.</p>
+      <p class="warning"><b>Warning</b>: Deleting your CloudFormation Stack will delete your Graylog API Security installation, and all the data contained in it. Make sure to back up any data you want to keep.</p>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+      <br>
+    </div>
+  </body>
+</html>
