@@ -32,7 +32,7 @@
         },
         "WebsiteConfiguration": {
           "ErrorDocument": "404.html",
-          "IndexDocument": "success.html"
+          "IndexDocument": "index.html"
         },
         "Tags" : [ {
           "Key": "Demo",
