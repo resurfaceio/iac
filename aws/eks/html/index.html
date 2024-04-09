@@ -17,6 +17,7 @@
         border-radius: 10px;
       }
       code {
+        line-height: 125%;
         background-color: inherit;
         color: #fff;
       }
@@ -62,6 +63,9 @@
         color: #000;
         margin-bottom: 15px;
       }
+      #multiline-curl {
+        white-space: pre-line;
+      }
     </style>
   </head>
   <body>
@@ -71,7 +75,11 @@
       <p>Click here to access the web UI from your browser: <a href="_url_">_url_</a></p>
       <br>
       <h2>Helm release notes</h2>
-      <pre><code>_notes_</code></pre>
+      <pre>
+        <code>
+          _notes_
+        </code>
+      </pre>
       <br>
       <h3>More links!</h3>
       <li><b>Capture URL</b>:
@@ -82,9 +90,13 @@
           <summary style="justify-content: flex-end;"><span class="icon" id="icon-right">👉</span>(Click here to see an
             example in action!)</summary>
           <p>Click <i>Import</i> and see the following mock API call appear in your Graylog API Security UI:</p>
-          <pre><code>curl -X POST -H "Content-type: application/json" \
-            --data '[["request_method","GET"],["request_url","http://myurl"],["response_code","200"]]' \
-            _captureurl_</code></pre>
+          <pre id="multiline-curl">
+            <code>$ curl -X POST \
+              -H "Content-type: application/json" \
+              --data '[["request_method","GET"],["request_url","http://myurl"],["response_code","200"]]' \
+              _captureurl_
+            </code>
+          </pre>
           <div style="text-align: right;"><button
               onclick="{$.ajax({type: 'POST', url: '_captureurl_', data: '[[&quot;request_method&quot;,&quot;GET&quot;],[&quot;request_url&quot;, &quot;http://myurl&quot;],[&quot;response_code&quot;,&quot;200&quot;]]'});}">Import</button>
           </div>
@@ -103,7 +115,11 @@
           href="https://helm.sh/docs/intro/install/">helm</a></p>
       <details>
         <summary>(You can also click here to see the raw kubeconfig)<span class="icon">👈</span></summary>
-        <pre><code>_kubeconfig_</code></pre>
+        <pre>
+          <code>
+            _kubeconfig_
+          </code>
+        </pre>
       </details>
       <br>
       <h4>Tearing down your CloudFormation Stack</h4>
