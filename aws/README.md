@@ -27,9 +27,9 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
     <table border="0">
       <tr>
         <td>
+          &nbsp;
+          <p>📝 This stack uses a custom template to create and deploy:</p>
           <ol>
-            &nbsp;
-            <p>📝 This stack uses a custom template to create and deploy:</p>
             <li>An <a href="https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html">Elastic Kubernetes Service instance</a>, with an EC2-based <a href="https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html">managed node group</a>, as well as the `VPC CNI`, `CoreDNS`, and `EBS CSI` <a href="https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html#workloads-add-ons-available-eks">EKS addons</a> required to enable internal networking and persistent volume provisioning, respectively.</li>
             <li>A number of network resources, including a new <a href="https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html">VPC</a> with 3 <a href="https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html">subnets</a>, and an <a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html">internet gateway</a> to provide the EKS Cluster with internet access.</li>
             <li>
