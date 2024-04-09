@@ -332,7 +332,7 @@
       "Value": { "Ref": "EKSClusterName" }
     },
     "SuccessURL": {
-      "Description": "Graylog API Security installation notes. Includes the web UI access URL, DB capture URL, and kubeconfig file.",
+      "Description": "Graylog API Security post-installation notes. Includes the web UI access URL, DB capture URL, and kubeconfig file.",
       "Value": { "Fn::GetAtt": [ "HelmStack", "Outputs.SuccessURL"] }
     }
   }

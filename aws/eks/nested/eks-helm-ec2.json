@@ -229,7 +229,7 @@
       "Value": { "Ref": "EKSClusterName" }
     },
     "SuccessURL": {
-      "Description": "Graylog API Security installation notes. They include the web UI access URL, DB capture URL, and kubeconfig file (You might need to give it a few minutes to update).",
+      "Description": "Graylog API Security post-installation notes. They include the web UI access URL, DB capture URL, and kubeconfig file (You might need to give it a few minutes to update).",
       "Value": { "Fn::GetAtt": [ "OutputBucket", "WebsiteURL"] }
     }
   }
