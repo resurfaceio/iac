@@ -43,7 +43,7 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
           </ol>
         </td>
         <td>
-          <img width="1200" alt="cd-parameters" src="https://github.com/resurfaceio/templates/assets/7117255/2676495b-964d-4760-8a10-9946c11a7ae4">
+          <img width="1013" alt="cf-designer" src="https://github.com/resurfaceio/templates/assets/7117255/1885a0e1-602e-443f-bce8-907a6420765d">
         </td>
       </tr>
     </table>
@@ -56,7 +56,7 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
 
   <details>
     <summary>Click to expand</summary>
-    <img width="600" alt="cd-parameters" src="https://github.com/resurfaceio/templates/assets/7117255/e16fb3b9-e177-4802-8c13-d7d0c6d0a3b5">
+    <img width="600" alt="cf-parameters" src="https://github.com/resurfaceio/templates/assets/7117255/e16fb3b9-e177-4802-8c13-d7d0c6d0a3b5">
   </details>
 
     - If installing a single-node cluster it is recommended to decrease the EKS node count (*EKSNodeCount*) to 1.
