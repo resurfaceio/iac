@@ -316,7 +316,7 @@
       "Type": "AWS::CloudFormation::Stack",
       "DependsOn": [ "Cluster", "Nodes", "EbsCsi", "VPC", "Subnet1" ],
       "Properties": {
-        "TemplateURL": "https://apisec-cf-templates.s3.amazonaws.com/eks/nested/eks-helm-ec2.json",
+        "TemplateURL": "https://apisec-cf-templates.s3.amazonaws.com/eks/nested/ec2-chart-installer.json",
         "Parameters": {
           "VPC": { "Ref": "VPC" },
           "VPCSubnet": { "Ref": "Subnet1" },
