@@ -111,7 +111,7 @@ You should be greeted with a page containing post-installation notes. There you 
 
 ## Running Graylog API Security on ECS
 
-Currently, this option is not supported. If you are interested, please let us know by opening an issue for us to allocate resources to bring this option up to date.
+Currently, this option is not supported. If you are interested, please let us know by opening a new issue!
 
 ## Kinesis Data Streams: Capture API call data from your AWS API Gateway
 
