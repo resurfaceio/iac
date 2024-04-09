@@ -99,8 +99,9 @@ Once the automatic deployment finishes, go to the **Outputs** section and click 
 
 <details>
   <summary>Click to expand</summary>
-  <img width="1482" alt="outputs" src="">
+  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/1347fc3e-2f66-43ac-8c3f-8b6e6fc455e0">
 </details>
+
 
 You should be greeted with a page containing post-installation notes. There you will find the URL to access the web UI for your very own Graylog API Security instance 🚀
 
