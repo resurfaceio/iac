@@ -26,15 +26,17 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
     <summary>What's being deployed here?</summary>
     <table border="0">
       <tr>
+        <th>
+          <p>📝 This stack uses a custom template to create and deploy:</p>
+        </th>
         <td>
-          <p>This stack uses a custom template to create and deploy:</p>
           <ol>
             <li>An <a href="https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html">Elastic Kubernetes Service instance</a>, with an EC2-based <a href="https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html">managed node group</a>, as well as the `VPC CNI`, `CoreDNS`, and `EBS CSI` <a href="https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html#workloads-add-ons-available-eks">EKS addons</a> required to enable internal networking and persistent volume provisioning, respectively.</li>
             <li>A number of network resources, including a new <a href="https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html">VPC</a> with 3 <a href="https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html">subnets</a>, and an <a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html">internet gateway</a> to provide the EKS Cluster with internet access.</li>
             <li>
               A <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html">nested CloudFormation stack</a> that, in turn, creates and deploys:
               <ul>
-                <li>A self-terminating <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html">EC2 instance</a> that connects to the newly-created EKS cluster and uses <a href="https://resurface.io/docs#using-helm">helm</a> to install both the <a href="https://artifacthub.io/packages/helm/resurfaceio/resurface">Graylog API Security chart</a>, and the [Cert-manager](https://artifacthub.io/packages/helm/cert-manager/cert-manager/) dependency. This way the provisioned Graylog API Security cluster is both <a href="https://resurface.io/docs#enabling-tls">TLS</a> and <a href="https://resurface.io/docs#enabling-iceberg-storage">Iceberg</a> ready.</li>
+                <li>A self-terminating <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html">EC2 instance</a> that connects to the newly-created EKS cluster and uses <a href="https://resurface.io/docs#using-helm">helm</a> to install both the <a href="https://artifacthub.io/packages/helm/resurfaceio/resurface">Graylog API Security chart</a>, and the <a href="https://artifacthub.io/packages/helm/cert-manager/cert-manager/">Cert-manager</a> dependency. This way the provisioned Graylog API Security cluster is both <a href="https://resurface.io/docs#enabling-tls">TLS</a> and <a href="https://resurface.io/docs#enabling-iceberg-storage">Iceberg</a> ready.</li>
                 <li>An <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html#CoreConcepts">S3 bucket</a> to host a static website with post-installation notes</li>
               </ul>
             </li>
