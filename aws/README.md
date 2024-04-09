@@ -14,6 +14,7 @@ CloudFormation templates to deploy Graylog API Security in AWS.
 
 The recommended way to deploy Graylog API Security.
 
+
 ### Do you want to try Graylog API Security but you don't have a Kubernetes cluster yet?
 
 No problem! Our templates will help you get started with Graylog API Security in minutes. In fact, you won't even have to leave your browser before you have a brand new EKS cluster running your own self-hosted Graylog API Security instance.
@@ -32,24 +33,20 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
 > 4. The corresponding [IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html) and policies, EC2 instance profiles, and [EKS access entries](https://docs.aws.amazon.com/eks/latest/userguide/access-entries.html) required to create, deploy and connect to EKS clusters, node groups, and EC2 instances.
 
   <details>
-    <summary></summary>
-    <img width="1013" alt="cf-designer" src="https://github.com/resurfaceio/templates/assets/7117255/1885a0e1-602e-443f-bce8-907a6420765d">
+    <summary>Click to see dependency diagram</summary>
+    <img width="600" alt="cf-designer" src="https://github.com/resurfaceio/templates/assets/7117255/1885a0e1-602e-443f-bce8-907a6420765d">
   </details>
 
 
-**Parameters**:
+**Parameters**: Choose both a name for you cluster (*EKSClusterName*), and 3 availability zones (*SubnetAZs*) to create the subnets for your cluster.
 
-- Choose both a name for you cluster (*EKSClusterName*), and 3 availability zones (*SubnetAZs*) to create the subnets for your cluster.
-
+- If installing a single-node cluster it is recommended to decrease the EKS node count (*EKSNodeCount*) to 1.
+  
   <details>
     <summary>Click to expand</summary>
     <img width="600" alt="cf-parameters" src="https://github.com/resurfaceio/templates/assets/7117255/e16fb3b9-e177-4802-8c13-d7d0c6d0a3b5">
   </details>
-
-    - If installing a single-node cluster it is recommended to decrease the EKS node count (*EKSNodeCount*) to 1.
-    - If the CloudFormation stack deployment fails, please choose 3 different availability zones and try again.
   
-
 - Make sure to allow CloudFormation to create both IAM resources and nested stacks (`CAPABILITY_AUTO_EXPAND`)
 
   <details>
@@ -57,7 +54,9 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
     <img width="1379" alt="image" src="https://github.com/resurfaceio/templates/assets/7117255/46ea7bcb-76b4-40db-a21c-01098ec2c666">
   </details>
 
-Once the automatic deployment finishes, go to the **Outputs** section and click on the **SuccessURL** link.
+- If the CloudFormation stack deployment fails, please choose 3 different availability zones and try again.
+
+**Outputs**: Once the automatic deployment finishes, go to the *Outputs* section and click on the ***SuccessURL*** link.
 
 <details>
   <summary>Click to expand</summary>
