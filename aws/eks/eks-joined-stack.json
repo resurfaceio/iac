@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Deploys EKS cluster with VPC",
+  "Description": "Deploys EKS cluster with VPC, and installs Graylog API Security Helm chart. Installation details are stored in an S3-hosted static website.",
   "Parameters": {
     "EKSClusterName": {
       "Type" : "String",
@@ -328,7 +328,7 @@
   },
   "Outputs": {
     "ClusterName": {
-      "Description": "Name of your EKS cluster. Connect to it to run helm commands from your terminal, using the aws cli: aws eks update-kubeconfig --name <Cluster name>",
+      "Description": "Name of your EKS cluster. Connect to it to run helm commands from your terminal using the aws cli: aws eks update-kubeconfig --name <ClusterName>",
       "Value": { "Ref": "EKSClusterName" }
     },
     "SuccessURL": {

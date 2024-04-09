@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Deploys EKS cluster with VPC",
+  "Description": "Installs Graylog API Security Helm chart on a given EKS cluster. Installation details are stored in an S3-hosted static website.",
   "Parameters": {
     "EKSClusterName": {
       "Type" : "String",
@@ -225,11 +225,11 @@
   },
   "Outputs": {
     "ClusterName": {
-      "Description": "Name of your EKS cluster. Connect to it to run helm commands from your terminal, using the aws cli: aws eks update-kubeconfig --name <Cluster name>",
+      "Description": "Name of your EKS cluster. Connect to it to run helm commands from your terminal using the aws cli: aws eks update-kubeconfig --name <ClusterName>",
       "Value": { "Ref": "EKSClusterName" }
     },
     "SuccessURL": {
-      "Description": "Graylog API Security post-installation notes. They include the web UI access URL, DB capture URL, and kubeconfig file (You might need to give it a few minutes to update).",
+      "Description": "Graylog API Security post-installation notes. They include the web UI access URL, DB capture URL, and kubeconfig file.",
       "Value": { "Fn::GetAtt": [ "OutputBucket", "WebsiteURL"] }
     }
   }
