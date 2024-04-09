@@ -2,17 +2,23 @@
 
 CloudFormation templates to deploy Graylog API Security in AWS.
 
-## EKS
+## Contents
+
+- [EKS](#eks): deploy Graylog API Security on AWS Elastic Kubernetes Service.
+- [KDS](#kds): deploy a Kinesis Data Stream instance to stream CloudWatch logs from your API Gateway instance to Graylog API Security.
+- [ECS](#ecs): (deprecated) templates to deploy Graylog API Security on AWS Elastic Container Service.
+
+## Running Graylog API Security on EKS
 
 The recommended way to deploy Graylog API Security.
 
 ### Do you want to try Graylog API Security but you don't have a Kubernetes cluster yet?
 
-No problem! Our templates will allow you to get started with Graylog API Security without having to run `kubectl`, `helm` or any commands at all. In fact, you won't even have to leave your browser before you have your own self-hosted Graylog API Security instance.
+No problem! Our templates will allow you to get started with Graylog API Security without having to run `kubectl`, `helm` or any commands at all. In fact, you won't even have to leave your browser before you have a brand new EKS cluster running your own self-hosted Graylog API Security instance.
 
 Click the **Launch Stack** button below to deploy Graylog API Security together with all the necessary resources as a [CloudFormation stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacks.html):
 
-[![Launch AWS Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=eks-graylog-api-security&templateURL=https%3A%2F%2Fapisec-cf-templates.s3.us-east-1.amazonaws.com%2Feks%2Feks-joined-stack.json)
+[![Launch AWS Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=eks-graylog-api-security&templateURL=https%3A%2F%2Fapisec-cf-templates.s3.us-east-1.amazonaws.com%2Feks%2Feks-all.json)
 
 **Parameters**:
 
@@ -61,12 +67,44 @@ You should be greeted with a page containing post-installation notes. There you 
 
 ### Do you already have an EKS cluster?
 
+Even better! Our template will help you get started with Graylog API Security without having to run `kubectl`, `helm` or any commands at all. In fact, you won't even have to leave your browser before you are running your own self-hosted Graylog API Security instance.
+
 Click the Launch Stack button below to deploy all necessary resources as a [CloudFormation stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacks.html):
 
-[![Launch AWS Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=eks-graylog-api-security&templateURL=https%3A%2F%2Fapisec-cf-templates.s3.us-east-1.amazonaws.com%2Feks%2Fnested%2Feks-helm-ec2.json)
+[![Launch AWS Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=eks-graylog-api-security&templateURL=https%3A%2F%2Fapisec-cf-templates.s3.us-east-1.amazonaws.com%2Feks%2Fnested%2Fec2-chart-installer.json)
 
+> [!NOTE]
+> This uses a custom template to create and deploy:
+> 1. A self-terminating [EC2 instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html) that connects to the newly-created EKS cluster and uses [helm](https://resurface.io/docs#using-helm) to install both the [Graylog API Security chart](https://artifacthub.io/packages/helm/resurfaceio/resurface), and the [Cert-manager](https://artifacthub.io/packages/helm/cert-manager/cert-manager/) dependency. This way the provisioned Graylog API Security cluster is both [TLS](https://resurface.io/docs#enabling-tls) and [Iceberg](https://resurface.io/docs#enabling-iceberg-storage) ready.
+> 2. An [S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html#CoreConcepts) to host a static website with post-installation notes.
+> 3. The corresponding [IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html) and policies, EC2 instance profiles, and [EKS access entries](https://docs.aws.amazon.com/eks/latest/userguide/access-entries.html) required to create and deploy new EC2 instances, and connect to your EKS cluster.
 
-### More info
+Once the automatic deployment finishes, go to the **Outputs** section and click on the **SuccessURL** link.
+
+<details>
+  <summary>Click to expand</summary>
+  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/30890bf9-c09c-4924-a10a-6d87bc1cf02c)">
+</details>
+
+You should be greeted with a page containing post-installation notes. There you will find the URL to access the web UI for your very own Graylog API Security instance 🚀
+
+<details>
+  <summary>Click to expand</summary>
+  ![success](https://github.com/resurfaceio/templates/assets/7117255/85aa99d1-2e3a-4858-8a3a-a743364a4e3c)
+</details>
+
+## Kinesis Data Streams: Capture API call data from your AWS API Gateway
+
+For APIs fronted by AWS API Gateway, API calls can be captured to your Graylog API Security database through Kinesis data streams.
+
+For more information, please visit our [aws-kds](https://github.com/resurfaceio/aws-kds) repo.
+
+  
+## ECS
+
+Currently, this option is not supported.
+
+## More info
 Please, visit [our docs](https://resurface.io/docs) to learn more about Graylog API Security.
 
 
