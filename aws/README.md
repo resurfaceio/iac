@@ -17,6 +17,7 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
 **Parameters**:
 
 - Choose both a name for you cluster (*EKSClusterName*), and 3 availability zones (*SubnetAZs*) to create the subnets for your cluster.
+
   <details>
     <summary>Click to expand</summary>
     <img width="600" alt="cd-parameters" src="https://github.com/resurfaceio/templates/assets/7117255/e16fb3b9-e177-4802-8c13-d7d0c6d0a3b5">
@@ -24,6 +25,7 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
 
     - If installing a single-node cluster it is recommended to decrease the EKS node count (*EKSNodeCount*) to 1.
     - If the CloudFormation stack deployment fails, please choose 3 different availability zones and try again.
+  
 
 - Make sure to allow CloudFormation to create both IAM resources and nested stacks (`CAPABILITY_AUTO_EXPAND`)
 
@@ -43,30 +45,19 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
 >   - An [S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html#CoreConcepts) to host a static website with post-installation notes.
 >4. The corresponding [IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html) and policies, EC2 instance profiles, and [EKS access entries](https://docs.aws.amazon.com/eks/latest/userguide/access-entries.html) required to create, deploy and connect to EKS clusters, node groups, and EC2 instances.
 
-Once the automatic deployment finishes, go to the **Outputs** section.
-
-<details>
-  <summary> Click to expand</summary>
-  
-  ![image]()
-</details>
-
-Click on the **SuccessURL** link.
+Once the automatic deployment finishes, go to the **Outputs** section and click on the **SuccessURL** link.
 
 <details>
   <summary>Click to expand</summary>
-  
-  ![image]()
+  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/30890bf9-c09c-4924-a10a-6d87bc1cf02c)">
 </details>
 
 You should be greeted with a page containing post-installation notes. There you will find the URL to access the web UI for your very own Graylog API Security instance 🚀
-
-<details>
-  <summary>Click to expand</summary>
   
-  ![image]()
-</details>
+  ![success](https://github.com/resurfaceio/templates/assets/7117255/85aa99d1-2e3a-4858-8a3a-a743364a4e3c)
 
+
+🏁 That's it!
 
 ### Do you already have an EKS cluster?
 
