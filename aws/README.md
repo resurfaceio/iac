@@ -5,8 +5,8 @@ CloudFormation templates to deploy Graylog API Security in AWS.
 ## Contents
 
 - [Running Graylog API Security on EKS](#running-graylog-api-security-on-eks): deploy Graylog API Security on AWS Elastic Kubernetes Service.
-  - [I don't have an EKS cluster](#do-you-want-to-try-graylog-api-security-but-you-dont-have-a-kubernetes-cluster-yet)
-  - [I do have an EKS cluster](#do-you-already-have-an-eks-cluster)
+  - [I don't have an EKS cluster yet](#do-you-want-to-try-graylog-api-security-but-you-dont-have-a-kubernetes-cluster-yet)
+  - [I already have an EKS cluster](#do-you-already-have-an-eks-cluster)
 - [KDS](#kinesis-data-streams-capture-api-call-data-from-your-aws-api-gateway): deploy a Kinesis Data Stream instance to stream CloudWatch logs from your API Gateway instance to Graylog API Security.
 - [Running Graylog API Security on ECS](#ecs): (deprecated) templates to deploy Graylog API Security on AWS Elastic Container Service.
 
