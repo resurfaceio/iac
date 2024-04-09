@@ -4,9 +4,11 @@ CloudFormation templates to deploy Graylog API Security in AWS.
 
 ## Contents
 
-- [EKS](#eks): deploy Graylog API Security on AWS Elastic Kubernetes Service.
-- [KDS](#kds): deploy a Kinesis Data Stream instance to stream CloudWatch logs from your API Gateway instance to Graylog API Security.
-- [ECS](#ecs): (deprecated) templates to deploy Graylog API Security on AWS Elastic Container Service.
+- [Running Graylog API Security on EKS](#running-graylog-api-security-on-eks): deploy Graylog API Security on AWS Elastic Kubernetes Service.
+  - [I don't have an EKS cluster](#do-you-want-to-try-graylog-api-security-but-you-dont-have-a-kubernetes-cluster-yet)
+  - [I do have an EKS cluster](#do-you-already-have-an-eks-cluster)
+- [KDS](#kinesis-data-streams-capture-api-call-data-from-your-aws-api-gateway): deploy a Kinesis Data Stream instance to stream CloudWatch logs from your API Gateway instance to Graylog API Security.
+- [Running Graylog API Security on ECS](#ecs): (deprecated) templates to deploy Graylog API Security on AWS Elastic Container Service.
 
 ## Running Graylog API Security on EKS
 
@@ -55,12 +57,15 @@ Once the automatic deployment finishes, go to the **Outputs** section and click 
 
 <details>
   <summary>Click to expand</summary>
-  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/30890bf9-c09c-4924-a10a-6d87bc1cf02c)">
+  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/30890bf9-c09c-4924-a10a-6d87bc1cf02c">
 </details>
 
 You should be greeted with a page containing post-installation notes. There you will find the URL to access the web UI for your very own Graylog API Security instance 🚀
-  
-  ![success](https://github.com/resurfaceio/templates/assets/7117255/85aa99d1-2e3a-4858-8a3a-a743364a4e3c)
+
+<details>
+  <summary>Click to expand</summary>
+  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/85aa99d1-2e3a-4858-8a3a-a743364a4e3c">
+</details>
 
 
 🏁 That's it!
@@ -83,14 +88,14 @@ Once the automatic deployment finishes, go to the **Outputs** section and click 
 
 <details>
   <summary>Click to expand</summary>
-  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/30890bf9-c09c-4924-a10a-6d87bc1cf02c)">
+  <img width="1482" alt="outputs" src="">
 </details>
 
 You should be greeted with a page containing post-installation notes. There you will find the URL to access the web UI for your very own Graylog API Security instance 🚀
 
 <details>
   <summary>Click to expand</summary>
-  ![success](https://github.com/resurfaceio/templates/assets/7117255/85aa99d1-2e3a-4858-8a3a-a743364a4e3c)
+    <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/85aa99d1-2e3a-4858-8a3a-a743364a4e3c">
 </details>
 
 ## Kinesis Data Streams: Capture API call data from your AWS API Gateway
@@ -100,9 +105,9 @@ For APIs fronted by AWS API Gateway, API calls can be captured to your Graylog A
 For more information, please visit our [aws-kds](https://github.com/resurfaceio/aws-kds) repo.
 
   
-## ECS
+## Running Graylog API Security on ECS
 
-Currently, this option is not supported.
+Currently, this option is not supported. If you are interested, please let us know by opening an issue for us to allocate resources to bring this option up to date.
 
 ## More info
 Please, visit [our docs](https://resurface.io/docs) to learn more about Graylog API Security.
