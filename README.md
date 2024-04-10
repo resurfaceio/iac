@@ -1,9 +1,11 @@
-# Templates
+# iac-templates
 
-Config templates for different environments
+IaC templates for multiple uses in different environments.
 
-## Directories
+## Content
 
-- aws &rarr; CloudFormation templates for ECS deployments, and APIG-KDS data capture
-- azure &rarr; ARM templates for ACI deployments, and APIM-EH data capture
-- terraform &rarr; IaC modules to provision Kubernetes clusters in multiple cloud environments
+| Directory   | Content | Usage |
+|:------------|:--------|:-----|
+| `aws`       | CloudFormation templates | EKS/ECS deployments, APIG data capture with KDS |
+| `azure`     | ARM templates     | AKS/ACG deployments, APIM data capture with EH | 
+| `terraform` | Terraform modules | Kubernetes provisioning for multiple cloud environments |
