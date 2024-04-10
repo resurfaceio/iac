@@ -34,7 +34,7 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
 
   <details>
     <summary>Click to see dependency diagram</summary>
-    <img width="600" alt="cf-designer" src="https://github.com/resurfaceio/templates/assets/7117255/1885a0e1-602e-443f-bce8-907a6420765d">
+    <img width="600" alt="cf-designer" src="https://github.com/resurfaceio/templates/assets/7117255/fa3325ed-5443-4ea6-81b6-9ef9b7b64b51">
   </details>
 
 
@@ -44,14 +44,14 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
   
   <details>
     <summary>Click to expand</summary>
-    <img width="600" alt="cf-parameters" src="https://github.com/resurfaceio/templates/assets/7117255/e16fb3b9-e177-4802-8c13-d7d0c6d0a3b5">
+    <img width="225" alt="all-params-small" src="https://github.com/resurfaceio/templates/assets/7117255/bbe4d7ad-a75d-4d92-9180-16c9cf113c36">
   </details>
-  
+
 - Make sure to allow CloudFormation to create both IAM resources and nested stacks (`CAPABILITY_AUTO_EXPAND`)
 
   <details>
     <summary>Click to expand</summary>
-    <img width="1379" alt="image" src="https://github.com/resurfaceio/templates/assets/7117255/46ea7bcb-76b4-40db-a21c-01098ec2c666">
+    <img width="552" alt="all-iam-small" src="https://github.com/resurfaceio/templates/assets/7117255/2dc4e2fd-f61a-4bb7-bae2-ff4c5912a8e1">
   </details>
 
 - If the CloudFormation stack deployment fails, please choose 3 different availability zones and try again.
@@ -60,14 +60,14 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
 
 <details>
   <summary>Click to expand</summary>
-  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/30890bf9-c09c-4924-a10a-6d87bc1cf02c">
+  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/71f82f25-9059-4c62-ab60-94aa1ca710ab">
 </details>
 
 You should be greeted with a page containing post-installation notes. There you will find the URL to access the web UI for your very own Graylog API Security instance 🚀
 
 <details>
   <summary>Click to expand</summary>
-  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/85aa99d1-2e3a-4858-8a3a-a743364a4e3c">
+  <img width="740" alt="congrats" src="https://github.com/resurfaceio/templates/assets/7117255/52d469ca-caa1-4bf3-a64a-c748736d1fc0">
 </details>
 
 
@@ -99,15 +99,14 @@ Once the automatic deployment finishes, go to the **Outputs** section and click 
 
 <details>
   <summary>Click to expand</summary>
-  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/1347fc3e-2f66-43ac-8c3f-8b6e6fc455e0">
+  <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/5534b5c6-587d-48dd-a808-7e0bd8f29f3a">
 </details>
-
 
 You should be greeted with a page containing post-installation notes. There you will find the URL to access the web UI for your very own Graylog API Security instance 🚀
 
 <details>
   <summary>Click to expand</summary>
-    <img width="1482" alt="outputs" src="https://github.com/resurfaceio/templates/assets/7117255/85aa99d1-2e3a-4858-8a3a-a743364a4e3c">
+    <img width="740" alt="congrats" src="https://github.com/resurfaceio/templates/assets/7117255/52d469ca-caa1-4bf3-a64a-c748736d1fc0">
 </details>
 
 ## Running Graylog API Security on ECS
