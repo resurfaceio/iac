@@ -4,7 +4,8 @@
   "Parameters": {
     "EKSClusterName": {
       "Type" : "String",
-      "Description" : "Enter a name for your EKS cluster. Required."
+      "Description" : "Enter a name for your EKS cluster. Default is cf-graylog-apisec",
+      "Default" : "cf-graylog-apisec"
     },
     "VPCAddressBlock": {
       "Type": "String",
