@@ -1,10 +1,22 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Deploys EKS cluster with VPC, including three subnets.",
+  "Description": "Deploys EKS cluster with VPC. Includes a managed node group and three subnets.",
   "Parameters": {
     "EKSClusterName": {
       "Type" : "String",
       "Description" : "Enter a name for your EKS cluster. Required."
+    },
+    "EKSNodeCount": {
+      "Type" : "Number",
+      "Default" : "3",
+      "Description" : "Enter the number of nodes for you EKS node group. Default is 3."
+    },
+    "EKSNodeCpuArch" :{
+      "Type" : "String",
+      "Default" : "arm64",
+      "AllowedValues" : ["x86", "arm64"],
+      "Description" : "Select the desired CPU architecture for the EKS nodes. Default is arm64.",
+      "ConstraintDescription": "Supported architectures: \"x86\", \"arm64\". Please enter a valid architecture type."
     },
     "KubernetesVersion": {
       "Type" : "String",
@@ -24,6 +36,9 @@
       "Type" : "List<AWS::EC2::AvailabilityZone::Name>",
       "Description" : "Select 3 availability zones to create cluster Subnets. Required."
     }
+  },
+  "Conditions": {
+    "UseARM": { "Fn::Equals": [ "arm64", { "Ref": "EKSNodeCpuArch" } ] }
   },
   "Resources": {
     "EKSClusterRole": {
@@ -57,6 +72,39 @@
           "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
         ],
         "RoleName" : "CFEKSClusterRole",
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ]
+      }
+    },
+    "EKSNodeRole": {
+      "Type" : "AWS::IAM::Role",
+      "Properties" : {
+        "AssumeRolePolicyDocument" :  {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                  "Service": [
+                      "ec2.amazonaws.com"
+                  ]
+              },
+              "Action": [
+                  "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Description" :"IAM Role for EKS Node group",
+        "ManagedPolicyArns" : [
+          "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",
+          "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+          "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+          "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+        ],
+        "RoleName" : "CFEKSNodeRole",
         "Tags" : [ {
           "Key": "Demo",
           "Value": "Graylog API Security"
@@ -204,9 +252,27 @@
         "Version" : { "Ref": "KubernetesVersion" }
       }
     },
+    "Nodes": {
+      "Type" : "AWS::EKS::Nodegroup",
+      "DependsOn": [ "Cluster" ],
+      "Properties" : {
+        "ClusterName" : { "Ref": "EKSClusterName" },
+        "DiskSize" : 20,
+        "AmiType": { "Fn::If": [ "UseARM", "AL2_ARM_64", "AL2_x86_64" ] },
+        "InstanceTypes" : [ { "Fn::If": [ "UseARM", "m7g.2xlarge", "m7i.2xlarge" ] } ],
+        "NodegroupName" : { "Fn::Join": ["-", [ { "Ref": "EKSClusterName" }, "nodes" ]] },
+        "NodeRole" : {"Fn::GetAtt" : ["EKSNodeRole", "Arn"] },
+        "ScalingConfig" : {
+          "DesiredSize" : { "Ref": "EKSNodeCount" },
+          "MaxSize" : { "Ref": "EKSNodeCount" },
+          "MinSize" : 0
+        },
+        "Subnets" : [ { "Ref" : "Subnet1" }, { "Ref" : "Subnet2" }, { "Ref" : "Subnet3" }]
+      }
+    },
     "VpcCni": {
       "Type" : "AWS::EKS::Addon",
-      "DependsOn": [ "Cluster" ],
+      "DependsOn": [ "Cluster", "Nodes" ],
       "Properties" : {
         "AddonName" : "vpc-cni",
         "AddonVersion" : "v1.16.0-eksbuild.1",
@@ -220,10 +286,24 @@
     },
     "CoreDNS": {
       "Type" : "AWS::EKS::Addon",
-      "DependsOn": [ "Cluster" ],
+      "DependsOn": [ "Cluster", "Nodes" ],
       "Properties" : {
         "AddonName" : "coredns",
         "AddonVersion" : "v1.11.1-eksbuild.4",
+        "ClusterName" : { "Ref": "EKSClusterName" },
+        "PreserveOnDelete" : false,
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ]
+      }
+    },
+    "EbsCsi": {
+      "Type" : "AWS::EKS::Addon",
+      "DependsOn": [ "Cluster", "Nodes" ],
+      "Properties" : {
+        "AddonName" : "aws-ebs-csi-driver",
+        "AddonVersion" : "v1.28.0-eksbuild.1",
         "ClusterName" : { "Ref": "EKSClusterName" },
         "PreserveOnDelete" : false,
         "Tags" : [ {
