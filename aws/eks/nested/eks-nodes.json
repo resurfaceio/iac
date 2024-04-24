@@ -21,10 +21,20 @@
       "AllowedValues" : ["x86", "arm64"],
       "Description" : "Select the desired CPU architecture for the EKS nodes. Default is arm64.",
       "ConstraintDescription": "Supported architectures: \"x86\", \"arm64\". Please enter a valid architecture type."
+    },
+    "EnableEBSAddon": {
+      "Type": "String",
+      "Default": "true",
+      "AllowedValues": [
+          "true",
+          "false"
+      ],
+      "Description": "Set this parameter to false if the Amazon EBS CSI driver EKS add-on is already enabled in your existing cluster. Defaults to true."
     }
   },
   "Conditions": {
-    "UseARM": { "Fn::Equals": [ "arm64", { "Ref": "EKSNodeCpuArch" } ] }
+    "UseARM": { "Fn::Equals": [ "arm64", { "Ref": "EKSNodeCpuArch" } ] },
+    "EnableEBSDriver" : { "Fn::Equals": [ "true", { "Ref": "EnableEBSAddon" } ] }
   },
   "Resources": {
     "EKSNodeRole": {
@@ -79,6 +89,7 @@
     },
     "EbsCsi": {
       "Type" : "AWS::EKS::Addon",
+      "Condition": "EnableEBSDriver",
       "DependsOn": [ "Nodes" ],
       "Properties" : {
         "AddonName" : "aws-ebs-csi-driver",
