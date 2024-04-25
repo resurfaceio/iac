@@ -7,6 +7,7 @@ CloudFormation templates to deploy Graylog API Security in AWS.
 - [Running Graylog API Security on EKS](#running-graylog-api-security-on-eks)
   - [I don't have an EKS cluster yet](#do-you-want-to-try-graylog-api-security-but-you-dont-have-a-kubernetes-cluster-yet)
   - [I already have an EKS cluster](#do-you-already-have-an-eks-cluster)
+  - [Other options](#other-options)
 - [Running Graylog API Security on ECS](#running-graylog-api-security-on-ecs) (deprecated)
 - [Kinesis Data Streams: Capture API call data from your AWS API Gateway](#kinesis-data-streams-capture-api-call-data-from-your-aws-api-gateway)
 
@@ -33,8 +34,21 @@ Click the **Launch Stack** button below to deploy Graylog API Security together 
 > 4. The corresponding [IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html) and policies required to create, deploy and connect to EKS clusters, node groups, and EC2 instances.
 
   <details>
-    <summary>Click to see dependency diagram</summary>
-    <img width="600" alt="cf-designer" src="https://github.com/resurfaceio/templates/assets/7117255/fa3325ed-5443-4ea6-81b6-9ef9b7b64b51">
+    <summary>Click to see dependency diagrams</summary>
+    <table>
+      <tr>
+        <th>Main stack</th>
+        <th>Nested stack: HelmStack</th>
+      </tr>
+      <tr>
+        <td>
+          <img width="600" alt="cf-designer" src="https://github.com/resurfaceio/templates/assets/7117255/fa3325ed-5443-4ea6-81b6-9ef9b7b64b51">
+        </td>
+        <td>
+          <img width="600" alt="cf-designer-nested" src="https://github.com/resurfaceio/templates/assets/7117255/aac1b6b2-2bfa-4707-b02a-77b689fb71da">
+        </td>
+      </tr>
+    </table>
   </details>
 
 
@@ -71,17 +85,36 @@ Even better! Our template will help you get started with Graylog API Security wi
 
 Click the Launch Stack button below to deploy all necessary resources as a [CloudFormation stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacks.html):
 
-[![Launch AWS Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=eks-graylog-api-security&templateURL=https%3A%2F%2Fapisec-cf-templates.s3.us-east-1.amazonaws.com%2Feks%2Fnested%2Fec2-chart-installer.json)
+[![Launch AWS Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=eks-graylog-api-security&templateURL=https%3A%2F%2Fapisec-cf-templates.s3.us-east-1.amazonaws.com%2Feks%2Feks-nodes-helm.json)
 
 > [!NOTE]
 > **What is being deployed here?**
-> 1. A self-terminating [EC2 instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html) that connects to the newly-created EKS cluster and uses [helm](https://resurface.io/docs#using-helm) to install both the [Graylog API Security chart](https://artifacthub.io/packages/helm/resurfaceio/resurface), and the [Cert-manager](https://artifacthub.io/packages/helm/cert-manager/cert-manager/) dependency chart.
-> 2. An [S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html#CoreConcepts) to host a static website with post-installation notes.
+> 1. A nested CloudFormation stack to deploy EC2-based [managed EKS node group](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html), as well as the `EBS CSI` required [EKS addon](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html#workloads-add-ons-available-eks), to enable persistent volume provisioning.
+> 2. A second nested CloudFormation stack that, in turn, creates and deploys:
+>     - A self-terminating [EC2 instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html) that connects to your existing EKS cluster and uses [helm](https://resurface.io/docs#using-helm) to install both the [Graylog API Security chart](https://artifacthub.io/packages/helm/resurfaceio/resurface), and the [Cert-manager](https://artifacthub.io/packages/helm/cert-manager/cert-manager/) dependency chart.
+>     - An [S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html#CoreConcepts) to host a static website with post-installation notes.
 > 3. The corresponding [IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html) and policies required to create and deploy new EC2 instances, and connect to your EKS cluster.
 
   <details>
-    <summary>Click to see dependency diagram</summary>
-    <img width="600" alt="cf-designer" src="https://github.com/resurfaceio/templates/assets/7117255/aac1b6b2-2bfa-4707-b02a-77b689fb71da">
+    <summary>Click to see dependency diagrams</summary>
+    <table>
+      <tr>
+        <th>Main stack</th>
+        <th>Nested stack: NodeGroupStack</th>
+        <th>Nested stack: HelmStack</th>
+      </tr>
+      <tr>
+        <td>
+          <img width="600" alt="cf-designer" src="">
+        </td>
+        <td>
+          <img width="600" alt="cf-designer-nested-nodes" src="">
+        </td>
+        <td>
+          <img width="600" alt="cf-designer-nested-helm" src="https://github.com/resurfaceio/templates/assets/7117255/aac1b6b2-2bfa-4707-b02a-77b689fb71da">
+        </td>
+      </tr>
+    </table>
   </details>
 
 
