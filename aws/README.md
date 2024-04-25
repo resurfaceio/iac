@@ -105,10 +105,10 @@ Click the Launch Stack button below to deploy all necessary resources as a [Clou
       </tr>
       <tr>
         <td>
-          <img width="600" alt="cf-designer" src="">
+          <img width="600" alt="cf-designer" src="https://github.com/resurfaceio/templates/assets/7117255/d04503ed-f1bb-44ff-8cb0-e02213d1675f">
         </td>
         <td>
-          <img width="600" alt="cf-designer-nested-nodes" src="">
+          <img width="600" alt="cf-designer-nested-nodes" src="https://github.com/resurfaceio/templates/assets/7117255/4fbdac3f-a253-4e0a-a354-7720267cf311">
         </td>
         <td>
           <img width="600" alt="cf-designer-nested-helm" src="https://github.com/resurfaceio/templates/assets/7117255/aac1b6b2-2bfa-4707-b02a-77b689fb71da">
