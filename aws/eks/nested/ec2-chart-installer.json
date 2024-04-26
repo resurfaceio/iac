@@ -197,7 +197,7 @@
               "helm repo add jetstack https://charts.jetstack.io",
               "helm repo update",
               "helm install cert-manager jetstack/cert-manager --create-namespace --namespace resurface --version v1.14.4 --set installCRDs=true --set prometheus.enabled=false",
-              "helm install resurface resurfaceio/resurface --namespace resurface --set provider=aws --set custom.config.pollingcycle=fast --set kubernetes-ingress.controller.extraArgs[0]=\"--disable-quic\" --set kubernetes-ingress.controller.service.enablePorts.quic=false --set iceberg.enabled=true --set minio.enabled=true --set minio.rootUser=minio --set minio.rootPassword=minio123 --set minio.persistence.size=100Gi --set ingress.minio.expose=true > notes.txt",
+              "helm install resurface resurfaceio/resurface --namespace resurface --set provider=aws --set custom.config.pollingcycle=fast --set kubernetes-ingress.controller.service.enablePorts.quic=false --set iceberg.enabled=true --set minio.enabled=true --set minio.rootUser=minio --set minio.rootPassword=minio123 --set minio.persistence.size=100Gi --set ingress.minio.expose=true > notes.txt",
               "timeout 5m bash -c 'until kubectl get svc resurface-kubernetes-ingress --namespace resurface --template \"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}\"; do sleep 10; done'",
               "export DB_HOST=$(kubectl get svc resurface-kubernetes-ingress --namespace resurface --template \"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}\")",
               "export DB_HOSTNAME=$(echo $DB_HOST | sed 's/:.*//')",
