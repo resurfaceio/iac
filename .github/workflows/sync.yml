@@ -19,7 +19,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           audience: sts.amazonaws.com
-          aws-region: us-east-1
+          aws-region: ${{ secrets.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_GA_ROLE }}
           
       - name: Sync S3 bucket
@@ -28,5 +28,6 @@ jobs:
           args: --exclude '.git/*' --exclude 'aws/eks/html/*'
           env:
             AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+            AWS_REGION: ${{ secrets.AWS_REGION }}
             SOURCE_DIR: aws/eks
             DEST_DIR: ekstest
