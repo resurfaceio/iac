@@ -26,7 +26,7 @@ jobs:
         env:
           SOURCE_DIR: aws/eks
           DEST_DIR: ekstest
-          EXCLUDE_PATTERN: aws/eks/html
+          EXCLUDE_PATTERN: aws/eks/html/*
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
