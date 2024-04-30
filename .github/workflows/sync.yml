@@ -1,0 +1,32 @@
+name: Sync CloudFormation templates with S3
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync_templates:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          audience: sts.amazonaws.com
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_GA_ROLE }}
+          
+      - name: Sync S3 bucket
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --exclude '.git/*' --exclude 'aws/eks/html/*'
+          env:
+            AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+            SOURCE_DIR: aws/eks
+            DEST_DIR: ekstest
