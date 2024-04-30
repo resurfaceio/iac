@@ -21,13 +21,8 @@ jobs:
           audience: sts.amazonaws.com
           aws-region: ${{ secrets.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_GA_ROLE }}
-          
-      - name: Sync S3 bucket
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --exclude '.git/*' --exclude 'aws/eks/html/*'
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: aws/eks
-          DEST_DIR: ekstest
+
+      - name: List creds
+        run: |
+          ls -la .aws/*
+          env | grep AWS
