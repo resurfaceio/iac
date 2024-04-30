@@ -6,6 +6,10 @@
       "Type" : "String",
       "Description" : "Enter a name for your EKS cluster. Required."
     },
+    "EKSClusterSG": {
+      "Type": "AWS::EC2::SecurityGroup::Id",
+      "Description": "Select the Security Group of your EKS cluster. Required."
+    },
     "VPC": {
       "Type": "AWS::EC2::VPC::Id",
       "Description": "Select the VPC where your EKS cluster is located. Required."
@@ -16,7 +20,7 @@
     },
     "S3BucketName": {
       "Type": "String",
-      "Description": "Enter a name for the bucket to host static page with installation results."
+      "Description": "Enter a name for the bucket to host static page with installation results. Required."
     }
   },
   "Resources": {
@@ -90,7 +94,8 @@
                 "eks:ListClusters",
                 "eks:DescribeCluster",
                 "eks:DeleteAccessEntry",
-                "s3:PutObject"
+                "s3:PutObject",
+                "ec2:RevokeSecurityGroupIngress"
               ],
               "Resource": "*"
             } ]
@@ -148,6 +153,18 @@
         "VpcId" : { "Ref": "VPC" }
       }
     },
+    "EKSClusterSGRule": {
+      "Type" : "AWS::EC2::SecurityGroupIngress",
+      "DependsOn" : "HelmInstallerSG",
+      "Properties" : {
+          "Description" : "Allow HTTPS inbound traffic from helm installer EC2 instance to EKS Cluster",
+          "FromPort" : 443,
+          "ToPort" : 443,
+          "IpProtocol" : "tcp",
+          "GroupId" : { "Ref": "EKSClusterSG" },
+          "SourceSecurityGroupId" : { "Ref": "HelmInstallerSG" }
+        }
+    },
     "HelmInstallerInstanceProfile": {
       "Type" : "AWS::IAM::InstanceProfile",
       "Properties" : {
@@ -156,6 +173,7 @@
     },
     "HelmInstaller": {
       "Type" : "AWS::EC2::Instance",
+      "DependsOn": "EKSClusterSGRule",
       "Properties" : {
         "InstanceInitiatedShutdownBehavior" : "terminate",
         "IamInstanceProfile": { "Ref" : "HelmInstallerInstanceProfile" },
@@ -215,6 +233,7 @@
               "unzip -qq awscliv2.zip",
               "./aws/install > /dev/null",
               { "Fn::Sub": [ "/usr/local/bin/aws eks delete-access-entry --cluster-name ${cluster} --principal-arn ${principal}", { "cluster": { "Ref": "EKSClusterName" }, "principal": { "Fn::GetAtt": ["HelmInstallerRole", "Arn"] } } ] },
+              { "Fn::Sub": [ "/usr/local/bin/aws ec2 revoke-security-group-ingress --group-id ${clustersg} --security-group-rule-ids ${clustersgrule}", { "clustersg": { "Ref": "EKSClusterSG" }, "clustersgrule": { "Ref": "EKSClusterSGRule" } } ] },
               "#shutdown -h +10 minutes",
               "shutdown -h now"
             ] ]
