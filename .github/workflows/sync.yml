@@ -10,7 +10,7 @@ on:
       dest_dir:
         description: 'AWS S3 bucket folder to sync with'
         required: true
-        default: 'ekstest'
+        default: 'eks'
       exclude_pattern:
         description: 'Pattern to exclude from sync process'
         required: true
