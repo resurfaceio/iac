@@ -6,6 +6,10 @@
       "Type": "String",
       "Description": "Enter the name of your existing EKS cluster. Required."
     },
+    "EKSClusterSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup::Id",
+      "Description": "Select the Security Group of your existing EKS cluster. Required."
+    },
     "EKSClusterSubnets": {
       "Type": "List<AWS::EC2::Subnet::Id>",
       "Description": "Select all subnets attached to your existing EKS cluster. Required."
@@ -59,6 +63,7 @@
           "VPC": { "Ref" : "EKSClusterVPC" },
           "VPCSubnet": { "Fn::Select" : [ 0, { "Ref" : "EKSClusterSubnets" } ] },
           "EKSClusterName": { "Ref" : "EKSClusterName" },
+          "EKSClusterSG": { "Ref": "EKSClusterSecurityGroup" },
           "S3BucketName": { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName" }, { "Fn::Select" : [ "0", { "Fn::Split" : [ "-", { "Fn::Select" : [ "2", { "Fn::Split" : [ "/", { "Ref" : "AWS::StackId" } ] } ] } ] } ] } ] ] }
         }
       }

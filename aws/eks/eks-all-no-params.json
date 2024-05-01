@@ -101,7 +101,25 @@
       "Type" : "AWS::EC2::Subnet",
       "Properties" : {
         "AvailabilityZone" : { "Fn::Select" : [ 0, { "Fn::GetAZs" : { "Ref" : "AWS::Region" } } ] },
-        "CidrBlock" : { "Fn::Select" : [ "0", { "Fn::Cidr" : [ { "Ref": "VPCAddressBlock" } , 3, 12] } ] },
+        "CidrBlock" : { "Fn::Select" : [ "0", { "Fn::Cidr" : [ { "Ref": "VPCAddressBlock" } , 2, 12] } ] },
+        "MapPublicIpOnLaunch" : true,
+        "PrivateDnsNameOptionsOnLaunch": {
+          "EnableResourceNameDnsAAAARecord" : false,
+          "EnableResourceNameDnsARecord" : false,
+          "HostnameType" : "ip-name"
+        },
+        "Tags" : [ {
+          "Key": "Demo",
+          "Value": "Graylog API Security"
+        } ],
+        "VpcId" : { "Ref" : "VPC" }
+      }
+    },
+    "Subnet2": {
+      "Type" : "AWS::EC2::Subnet",
+      "Properties" : {
+        "AvailabilityZone" : { "Fn::Select" : [ 1, { "Fn::GetAZs" : { "Ref" : "AWS::Region" } } ] },
+        "CidrBlock" : { "Fn::Select" : [ "1", { "Fn::Cidr" : [ { "Ref": "VPCAddressBlock" } , 2, 12] } ] },
         "MapPublicIpOnLaunch" : true,
         "PrivateDnsNameOptionsOnLaunch": {
           "EnableResourceNameDnsAAAARecord" : false,
@@ -167,7 +185,7 @@
         "ResourcesVpcConfig" : {
           "EndpointPrivateAccess" : false,
           "EndpointPublicAccess" : true,
-          "SubnetIds" : [ { "Ref" : "Subnet1" } ]
+          "SubnetIds" : [ { "Ref" : "Subnet1" }, { "Ref" : "Subnet2" } ]
         },
         "RoleArn" : {"Fn::GetAtt" : ["EKSClusterRole", "Arn"] },
         "Tags" : [ {
@@ -184,7 +202,7 @@
         "ClusterName" : { "Ref": "EKSClusterName" },
         "DiskSize" : 20,
         "AmiType": "AL2_ARM_64",
-        "InstanceTypes" : "m7g.2xlarge",
+        "InstanceTypes" : [ "m7g.2xlarge" ],
         "NodegroupName" : { "Fn::Join": ["-", [ { "Ref": "EKSClusterName" }, "nodes" ]] },
         "NodeRole" : {"Fn::GetAtt" : ["EKSNodeRole", "Arn"] },
         "ScalingConfig" : {
@@ -192,7 +210,7 @@
           "MaxSize" : 1,
           "MinSize" : 0
         },
-        "Subnets" : [ { "Ref" : "Subnet1" } ]
+        "Subnets" : [ { "Ref" : "Subnet1" }, { "Ref" : "Subnet2" } ]
       }
     },
     "VpcCni": {
@@ -246,6 +264,7 @@
           "VPC": { "Ref": "VPC" },
           "VPCSubnet": { "Ref": "Subnet1" },
           "EKSClusterName": { "Ref": "EKSClusterName" },
+          "EKSClusterSG": { "Fn::GetAtt": [ "Cluster", "ClusterSecurityGroupId" ] },
           "S3BucketName": { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName" }, { "Fn::Select" : [ "0", { "Fn::Split": [ "-", { "Fn::Select" : [ "2", { "Fn::Split": [ "/", { "Ref": "AWS::StackId" } ] } ] } ] } ] } ] ] }
         }
       }

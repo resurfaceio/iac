@@ -321,6 +321,7 @@
           "VPC": { "Ref": "VPC" },
           "VPCSubnet": { "Ref": "Subnet1" },
           "EKSClusterName": { "Ref": "EKSClusterName" },
+          "EKSClusterSG": { "Fn::GetAtt": [ "Cluster", "ClusterSecurityGroupId" ] },
           "S3BucketName": { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName" }, { "Fn::Select" : [ "0", { "Fn::Split": [ "-", { "Fn::Select" : [ "2", { "Fn::Split": [ "/", { "Ref": "AWS::StackId" } ] } ] } ] } ] } ] ] }
         }
       }
