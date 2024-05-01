@@ -2,6 +2,19 @@ name: Sync CloudFormation templates
 
 on:
   workflow_dispatch:
+    inputs:
+      source_dir:
+        description: 'Directory to sync with AWS S3'
+        required: true
+        default: 'aws/eks'
+      dest_dir:
+        description: 'AWS S3 bucket folder to sync with'
+        required: true
+        default: 'ekstest'
+      exclude_pattern:
+        description: 'Pattern to exclude from sync process'
+        required: true
+        default: '*.html'
 
 jobs:
   sync_templates:
@@ -24,9 +37,9 @@ jobs:
 
       - name: Sync bucket
         env:
-          SOURCE_DIR: aws/eks
-          DEST_DIR: ekstest
-          EXCLUDE_PATTERN: aws/eks/html/*
+          SOURCE_DIR: ${{ github.event.inputs.source_dir }}
+          DEST_DIR: ${{ github.event.inputs.dest_dir }}
+          EXCLUDE_PATTERN: ${{ github.event.inputs.exclude_pattern }}
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
