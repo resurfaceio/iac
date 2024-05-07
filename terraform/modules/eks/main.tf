@@ -145,6 +145,7 @@ resource "aws_eks_node_group" "nodegroup" {
     min_size     = 0
   }
 
+  ami_type = var.cpu_arch == "x86" ? "AL2_x86_64" : "AL2_ARM_64"
   instance_types = [var.cpu_arch == "x86" ? "m7i.2xlarge" : "m7g.2xlarge"]
 
   update_config {
@@ -207,7 +208,7 @@ current-context: ${aws_eks_cluster.cluster.arn}
 kind: Config
 preferences: {}
 users:
-- name: ${aws_eks_cluster.cluster.arn}
+- name: ${aws_eks_cluster.cluster.arn}-token
   user:
     token: ${data.aws_eks_cluster_auth.cluster_auth.token}
 - name: ${aws_eks_cluster.cluster.arn}

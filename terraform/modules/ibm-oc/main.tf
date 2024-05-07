@@ -50,6 +50,7 @@ resource "ibm_container_vpc_cluster" "cluster" {
   worker_count = var.openshift_pool_size
 
   force_delete_storage = true
+  wait_till = "OneWorkerNodeReady"
 }
 
 data "ibm_container_cluster_config" "cluster_config" {

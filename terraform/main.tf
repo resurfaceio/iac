@@ -66,8 +66,8 @@ module "helm_aks" {
   cloud_provider     = "azure"
   skip_release       = var.skip_helm || !contains(local.providers, "azure")
   kube_config_source = "file"
-  kube_config        = module.aks[0].cluster_kubeconfig
-  kube_config_path   = module.aks[0].cluster_config_file
+  kube_config        = length(module.aks) > 0 ? module.aks[0].cluster_kubeconfig : local._empty[0].cluster_kubeconfig
+  kube_config_path   = length(module.aks) > 0 ? module.aks[0].cluster_config_file : local._empty[0].cluster_config_file
 
   multinode_enabled       = var.helm_multinode_enabled
   worker_count            = var.helm_multinode_worker_count
@@ -87,6 +87,7 @@ module "eks" {
   region             = var.aws_region
   availability_zones = var.aws_zones
   prefix             = var.prefix
+  cpu_arch           = var.cpu_arch
   node_count         = var.node_count
   kube_config_path   = var.eks_kubeconfig_dir
 }
@@ -101,8 +102,8 @@ module "helm_eks" {
   cloud_provider     = "aws"
   skip_release       = var.skip_helm || !contains(local.providers, "aws")
   kube_config_source = "file"
-  kube_config        = module.eks[0].cluster_kubeconfig
-  kube_config_path   = module.eks[0].cluster_config_file
+  kube_config        = length(module.eks) > 0 ? module.eks[0].cluster_kubeconfig : local._empty[0].cluster_kubeconfig
+  kube_config_path   = length(module.eks) > 0 ? module.eks[0].cluster_config_file : local._empty[0].cluster_config_file
 
   multinode_enabled       = var.helm_multinode_enabled
   worker_count            = var.helm_multinode_worker_count
@@ -138,8 +139,8 @@ module "helm_gke" {
   cloud_provider     = "gcp"
   skip_release       = var.skip_helm || !contains(local.providers, "gcp")
   kube_config_source = "file"
-  kube_config        = module.gke[0].cluster_kubeconfig
-  kube_config_path   = module.gke[0].cluster_config_file
+  kube_config        = length(module.gke) > 0 ? module.gke[0].cluster_kubeconfig : local._empty[0].cluster_kubeconfig
+  kube_config_path   = length(module.gke) > 0 ? module.gke[0].cluster_config_file : local._empty[0].cluster_config_file
 
   multinode_enabled       = var.helm_multinode_enabled
   worker_count            = var.helm_multinode_worker_count
@@ -163,7 +164,7 @@ module "ibm_oc" {
 }
 
 locals {
-  _empty = tolist([{
+  _empty = [{
     cluster_config_file      = "~/.kube/config"
     cluster_ingress_hostname = ""
     cluster_config_ctx       = null
@@ -177,8 +178,7 @@ locals {
       client_cert     = ""
       client_key      = ""
     }
-  }])
-  ibmc_module = length(module.ibm_oc) > 0 ? module.ibm_oc : local._empty
+  }]
 }
 
 module "helm_ibm_oc" {
@@ -191,14 +191,14 @@ module "helm_ibm_oc" {
   cloud_provider     = "ibm-openshift"
   skip_release       = var.skip_helm || !contains(local.providers, "ibm-openshift")
   kube_config_source = "file"
-  kube_config        = local.ibmc_module[0].cluster_kubeconfig
-  kube_config_path   = local.ibmc_module[0].cluster_config_file
+  kube_config        = length(module.ibm_oc) > 0 ? module.ibm_oc[0].cluster_kubeconfig : local._empty[0].cluster_kubeconfig
+  kube_config_path   = length(module.ibm_oc) > 0 ? module.ibm_oc[0].cluster_config_file : local._empty[0].cluster_config_file
 
   multinode_enabled       = var.helm_multinode_enabled
   worker_count            = var.helm_multinode_worker_count
   iceberg_enabled         = var.helm_iceberg_enabled
   tls_enabled             = var.helm_tls_enabled
-  tls_host                = local.ibmc_module[0].cluster_ingress_hostname
+  tls_host                = length(module.ibm_oc) > 0 ? module.ibm_oc[0].cluster_ingress_hostname : local._empty[0].cluster_ingress_hostname
   tls_autoissue_email     = var.helm_tls_autoissue_email
   auth_enabled            = var.helm_auth_enabled
   cert_manager_version    = var.helm_cert_manager_chart_version

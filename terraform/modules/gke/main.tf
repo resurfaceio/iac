@@ -64,7 +64,7 @@ contexts:
     user: ${google_container_cluster.cluster.name}
   name: ${google_container_cluster.cluster.name}
 users:
-- name: ${google_container_cluster.cluster.name}
+- name: ${google_container_cluster.cluster.name}-token
   user:
     token: ${data.google_client_config.default.access_token}
 - name: ${google_container_cluster.cluster.name}
