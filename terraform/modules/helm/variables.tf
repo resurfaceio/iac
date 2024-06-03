@@ -99,13 +99,13 @@ variable "auth_enabled" {
 variable "cert_manager_version" {
   description = "Cert-manager chart version"
   type        = string
-  default     = "v1.14.4"
+  default     = "v1.14.5"
 }
 
 variable "resurface_chart_version" {
   description = "Resurface chart version"
   type        = string
-  default     = "3.6.11"
+  default     = "3.7.0"
 }
 
 variable "resurface_app_version" {

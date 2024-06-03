@@ -242,7 +242,7 @@ variable "helm_auth_enabled" {
 variable "helm_cert_manager_chart_version" {
   description = "Cert-manager chart version"
   type        = string
-  default     = "v1.14.4"
+  default     = "v1.14.5"
 }
 
 variable "helm_resurface_chart_version" {

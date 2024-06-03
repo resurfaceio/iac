@@ -177,7 +177,7 @@ For more variables, please take a look at the [reference](#variables)
 | `helm_tls_enabled` | Set to true to install cert-manager chart | `bool` | `false` | No |
 | `helm_tls_autoissue_email` | Let's encrypt notifications will be sent to this address | `string` | `"foo@bar.com"` | No |
 | `helm_auth_enabled` | Set to true to enable basic auth | `bool` | `false` | No |
-| `helm_cert_manager_chart_version` | Cert-manager chart version | `string` | `"v1.14.4"` | No |
+| `helm_cert_manager_chart_version` | Cert-manager chart version | `string` | `"v1.14.5"` | No |
 | `helm_resurface_chart_version` | Resurface chart version | `string` | `""` | No |
 | `helm_resurface_app_version` | Resurface chart version | `string` | `""` | No |
 
