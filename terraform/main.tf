@@ -109,7 +109,7 @@ module "helm_eks" {
   worker_count            = var.helm_multinode_worker_count
   iceberg_enabled         = var.helm_iceberg_enabled
   tls_enabled             = var.helm_tls_enabled
-  tls_host                = var.helm_tls_host_azure
+  tls_host                = var.helm_tls_host_aws
   tls_autoissue_email     = var.helm_tls_autoissue_email
   auth_enabled            = var.helm_auth_enabled
   cert_manager_version    = var.helm_cert_manager_chart_version
@@ -146,7 +146,7 @@ module "helm_gke" {
   worker_count            = var.helm_multinode_worker_count
   iceberg_enabled         = var.helm_iceberg_enabled
   tls_enabled             = var.helm_tls_enabled
-  tls_host                = var.helm_tls_host_azure
+  tls_host                = var.helm_tls_host_gcp
   tls_autoissue_email     = var.helm_tls_autoissue_email
   auth_enabled            = var.helm_auth_enabled
   cert_manager_version    = var.helm_cert_manager_chart_version
