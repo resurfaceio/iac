@@ -163,7 +163,12 @@ resource "aws_eks_node_group" "nodegroup" {
 resource "aws_eks_addon" "ebs_csi" {
   cluster_name  = aws_eks_cluster.cluster.name
   addon_name    = "aws-ebs-csi-driver"
-  addon_version = "v1.28.0-eksbuild.1"
+  addon_version = "v1.31.0-eksbuild.1"
+  configuration_values = jsonencode({
+    defaultStorageClass = {
+      enabled = true
+    }
+  })
   depends_on = [ aws_eks_cluster.cluster, aws_eks_node_group.nodegroup, aws_eks_addon.vpc_cni, aws_eks_addon.coredns ]
 }
 
