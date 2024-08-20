@@ -3,7 +3,24 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
       "apiManagementServiceName": {
-        "type": "string"
+        "type": "string",
+        "metadata": {
+          "description": "Name of your existing API Management instance"
+        }
+      },
+      "eventHubsNamespaceName": {
+        "type": "string",
+        "defaultValue": "GraylogAPISecurityEH",
+        "metadata": {
+          "description": "Name of EventHubs namespace"
+        }
+      },
+      "eventHubsInstanceName": {
+        "type": "string",
+        "defaultValue": "APIM-01",
+        "metadata": {
+          "description": "Name of the EventHubs instance"
+        }
       }
     },
     "variables": {
@@ -17,6 +34,14 @@
           "mode": "Incremental",
           "templateLink": {
             "uri": "https://raw.githubusercontent.com/resurfaceio/iac-templates/master/azure/event-hub.json"
+          },
+          "parameters": {
+            "eventHubsNamespaceName": {
+              "value": "[parameters('eventHubsNamespaceName')]"
+            },
+            "eventHubsInstanceName": {
+              "value": "[parameters('eventHubsInstanceName')]"
+            }
           }
         }
       },
