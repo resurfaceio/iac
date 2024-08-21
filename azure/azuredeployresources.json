@@ -12,14 +12,14 @@
         "type": "string",
         "defaultValue": "GraylogAPISecurityEH",
         "metadata": {
-          "description": "Name of EventHubs namespace"
+          "description": "Name of the EventHubs namespace to be created"
         }
       },
       "eventHubsInstanceName": {
         "type": "string",
         "defaultValue": "APIM-01",
         "metadata": {
-          "description": "Name of the EventHubs instance"
+          "description": "Name of the EventHubs instance to be created"
         }
       }
     },
