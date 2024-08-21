@@ -57,6 +57,12 @@
           "parameters": {
             "apiManagementServiceName": {
               "value": "[parameters('apiManagementServiceName')]"
+            },
+            "eventHubsNamespaceName": {
+              "value": "[parameters('eventHubsNamespaceName')]"
+            },
+            "eventHubsInstanceName": {
+              "value": "[parameters('eventHubsInstanceName')]"
             }
           }
         },
