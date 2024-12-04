@@ -163,7 +163,7 @@ resource "aws_eks_node_group" "nodegroup" {
 resource "aws_eks_addon" "ebs_csi" {
   cluster_name  = aws_eks_cluster.cluster.name
   addon_name    = "aws-ebs-csi-driver"
-  addon_version = "v1.31.0-eksbuild.1"
+  addon_version = "v1.36.0-eksbuild.1"
   configuration_values = jsonencode({
     defaultStorageClass = {
       enabled = true
@@ -175,14 +175,14 @@ resource "aws_eks_addon" "ebs_csi" {
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name  = aws_eks_cluster.cluster.name
   addon_name    = "vpc-cni"
-  addon_version = "v1.16.0-eksbuild.1"
+  addon_version = "v1.18.3-eksbuild.2"
   depends_on = [ aws_eks_cluster.cluster, aws_eks_node_group.nodegroup ]
 }
 
 resource "aws_eks_addon" "coredns" {
   cluster_name  = aws_eks_cluster.cluster.name
   addon_name    = "coredns"
-  addon_version = "v1.11.1-eksbuild.4"
+  addon_version = "v1.11.3-eksbuild.1"
   depends_on = [ aws_eks_cluster.cluster, aws_eks_node_group.nodegroup ]
 }
 

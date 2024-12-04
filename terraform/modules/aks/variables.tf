@@ -41,7 +41,7 @@ variable "node_count" {
 variable "kube_version" {
   description = "AKS version"
   type        = string
-  default     = "1.27.9"
+  default     = "1.30"
 }
 
 variable "cpu_arch" {
